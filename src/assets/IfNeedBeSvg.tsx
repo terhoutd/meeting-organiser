@@ -1,15 +1,8 @@
 import React from "react";
 
-export default function IfNeedBeSvg({ pxSize, className }: { pxSize: string; className: string }) {
+export default function IfNeedBeSvg({ className }: { className: string }) {
   return (
-    <svg
-      width={pxSize}
-      height={pxSize}
-      className={className}
-      viewBox="0 0 16 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg className={className} viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

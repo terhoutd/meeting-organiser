@@ -1,5 +1,5 @@
 import React from "react";
-import ArrowSvg from "./assets/ArrowSvg";
+import ArrowSvg from "../assets/ArrowSvg";
 import clsx from "clsx";
 export function ToolbarArrows({
   // date, // available, but not used here

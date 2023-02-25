@@ -2,19 +2,13 @@ import React from "react";
 
 export default function YesTickSvg({ className }: { className: string }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      aria-label="Checkmark"
-      aria-hidden="true"
-      className={className}
-    >
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 17" fill="none">
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M7.11116 10.4873C6.55466 9.8736 5.60604 9.82726 4.99237 10.3838C4.3787 10.9403 4.33235 11.8889 4.88886 12.5026L10.1231 18.2744L19.0471 9.57403C19.6403 8.99573 19.6524 8.04606 19.074 7.45289C18.4957 6.85971 17.5461 6.84766 16.9529 7.42597L10.2559 13.9551L7.11116 10.4873Z"
-        fill="currentColor"
-      ></path>
+        d="M3.6859 6.29999C3.03218 5.60259 1.93689 5.56719 1.2395 6.22091C0.542106 6.87463 0.506701 7.96992 1.16042 8.66731L6.94005 14.8331L16.7646 5.56676C17.4599 4.9109 17.492 3.8155 16.8361 3.12013C16.1802 2.42476 15.0848 2.39273 14.3895 3.04859L7.0909 9.93247L3.6859 6.29999Z"
+        fill="currentcolor"
+      />
     </svg>
   );
 }

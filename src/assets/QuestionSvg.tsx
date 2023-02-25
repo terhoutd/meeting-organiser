@@ -4,7 +4,7 @@ export default function QuestionSvg({ pxSize, className }: { pxSize: string; cla
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
       className={className}
       aria-hidden="true"
       focusable="false"
@@ -15,7 +15,7 @@ export default function QuestionSvg({ pxSize, className }: { pxSize: string; cla
           id="d_pending-vote_svg__a"
         ></path>
       </defs>
-      <use fill="currentColor" xlink:href="#d_pending-vote_svg__a" transform="translate(4 4)" fillRule="evenodd"></use>
+      <use fill="currentColor" xlinkHref="#d_pending-vote_svg__a" transform="translate(4 4)" fillRule="evenodd"></use>
     </svg>
   );
 }
