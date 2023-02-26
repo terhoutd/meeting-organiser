@@ -9,11 +9,12 @@ import usePollData from "../../hooks/usePollData";
 import ParticipantNameLabel from "../../components/ParticipantNameLabel";
 import PaginationRow from "../../components/PaginationRow";
 import Button from "../../components/Button";
+import { UseVote } from "../../context/voteContext";
 
 export default function VoteGroupPoll() {
   let params = useParams();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const { test } = UseVote();
+  console.log(test);
   const [userResponses, setUserResponses] = useState<TimesResponse[]>([]);
   const [slotPage, setSlotPage] = useState(1);
   console.log("VoteGroupPoll rendering");

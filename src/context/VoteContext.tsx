@@ -11,7 +11,7 @@ export function UseVote() {
 export function VoteProvider({ children }: { children: ReactNode }) {
   const [pollId, setPollId] = useState<string>("");
   const [participant, setParticipant] = useState<Participant>();
-
+  console.log("inside the context provider");
   const value = {
     test: "hello1",
   };
