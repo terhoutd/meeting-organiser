@@ -12,7 +12,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../others/firebase";
 import { CalEvent, responseOption } from "../../others/Types";
 import { YES_VOTE } from "../../others/Constants";
-import { setParticipantInfo } from "../../others/helpers";
+import { uploadParticipantInfo } from "../../others/helpers";
 
 const durations = [
   {
@@ -56,7 +56,7 @@ function CreateGroupPoll() {
       });
       console.log("Document written with ID: ", docRef.id);
       const pollId = docRef.id;
-      setParticipantInfo(pollId, {
+      uploadParticipantInfo(pollId, {
         isOrganiser: true,
         name: name,
         email: email,

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function QuestionSvg({ pxSize, className }: { pxSize: string; className: string }) {
+export default function QuestionSvg({ className }: { className: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

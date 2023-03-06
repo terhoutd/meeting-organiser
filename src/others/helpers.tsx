@@ -3,7 +3,7 @@ import React from "react";
 import { db } from "./firebase";
 import { ParticipantFullInfo, TimesResponse } from "./Types";
 
-export async function setParticipantInfo(pollId: string, participant: ParticipantFullInfo) {
+export async function uploadParticipantInfo(pollId: string, participant: ParticipantFullInfo) {
   console.log("hi2 from helper");
 
   //if (!participant || !pollId) return;

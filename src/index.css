@@ -49,8 +49,12 @@
 }
 #root {
   font-family: "Fira Sans", sans-serif;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 1000px;
+  height: 700px;
+  margin: 40px auto;
+  background-color: white;
+  color: #2f3740;
+}
+body {
+  background-color: beige;
 }

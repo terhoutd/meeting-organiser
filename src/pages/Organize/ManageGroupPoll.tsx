@@ -34,9 +34,9 @@ export default function ManageGroupPoll() {
         })}
         <div className="justify-self-start">eddy</div>
 
-        <TickBoxYes />
-        <TickBoxYes />
-        <TickBoxNo />
+        <TickBoxYes variant="table" />
+        <TickBoxYes variant="table" />
+        <TickBoxNo variant="table" />
       </div>
     </div>
   ) : (

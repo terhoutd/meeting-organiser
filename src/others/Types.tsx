@@ -11,6 +11,7 @@ export type responseOption = typeof YES_VOTE | typeof NO_VOTE | typeof IFNEEDBE_
 export type PollData = {
   organiserEmail: string;
   organiserName: string;
+  title: string;
   slots: FsSlot[];
   participants: ParticipantFullInfo[];
 };
@@ -22,3 +23,5 @@ export interface Participant {
 export interface ParticipantFullInfo extends Participant {
   responses: TimesResponse[];
 }
+
+export type TickBox = { variant: "table" | "slot-details" | "legend" | "legend-full" };

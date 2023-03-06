@@ -22,14 +22,14 @@ export default function SlotVote({ event, vote, setVote }: { event: FsSlot; vote
     <div
       onClick={handleClick}
       className={clsx(
-        "flex	cursor-pointer flex-col items-center",
+        "flex	cursor-pointer flex-col items-center py-0",
         isNoVote && " hover:bg-gray-50",
-        isYesVote && " hover:bg-lime-100",
-        isIfneedbeVote && " hover:bg-amber-200"
+        isYesVote && " bg-lime-100",
+        isIfneedbeVote && " bg-amber-200"
       )}
     >
       <SlotDetails event={event} />
-      <div className={clsx("flex h-6 w-6 justify-center rounded border border-gray-500 bg-white")}>
+      <div className={clsx("my-3 flex h-6 w-6 justify-center rounded border border-gray-500 bg-white")}>
         {isYesVote && <YesTickSvg className="w-4 bg-white text-lime-500" />}
         {isIfneedbeVote && <IfNeedBeSvg className="w-4 bg-white" />}
       </div>

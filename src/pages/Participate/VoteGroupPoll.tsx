@@ -1,110 +1,53 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import SlotVote from "../../components/SlotVote";
-import { FsSlot, ParticipantFullInfo, TimesResponse } from "../../others/Types";
 import { NO_VOTE } from "../../others/Constants";
-import ResponsesTable from "../../components/ResponsesTable";
-import usePollData from "../../hooks/usePollData";
-import ParticipantNameLabel from "../../components/ParticipantNameLabel";
-import PaginationRow from "../../components/PaginationRow";
+
 import Button from "../../components/Button";
-import { UseVote } from "../../context/voteContext";
+import { useVote } from "../../context/voteContext";
+import FullResponseTable from "../../components/FullResponseTable";
+import OverviewPanel from "../../components/OverviewPanel";
 
 export default function VoteGroupPoll() {
   let params = useParams();
-  const { test } = UseVote();
+  const { test, pollData, setPollId, userResponses, setUserResponses, participant } = useVote();
   console.log(test);
-  const [userResponses, setUserResponses] = useState<TimesResponse[]>([]);
-  const [slotPage, setSlotPage] = useState(1);
   console.log("VoteGroupPoll rendering");
   console.log("responses", userResponses);
   const navigate = useNavigate();
   const pollId = params.groupPollId || "";
+  useEffect(() => setPollId(pollId));
+
+  const pollDataAvailable = !!pollData;
   const urlConfirmPage = `/meeting/participate/id/${pollId}/vote/confirm`;
-  const pollData = usePollData({
-    pollId: pollId,
-    callback: (pollData) => {
-      declineAllSlots(pollData);
-    },
-  });
+  useEffect(() => {
+    console.log("usef1", pollDataAvailable, userResponses, pollData);
+    if (userResponses || !pollDataAvailable) return;
+    console.log("in", declineAllSlots(pollData));
+    declineAllSlots(pollData);
+  }, [pollDataAvailable]);
 
-  if (!pollData) return <span>no data yet</span>;
-
-  const { slots, participants }: { slots: FsSlot[]; participants: ParticipantFullInfo[] } = pollData;
-  const maxSlotsPerPage = 5;
-  const maxPage = Math.ceil(slots.length / maxSlotsPerPage);
-  const displayedSlotsIds = slots
-    .filter((s, index) => index > (slotPage - 1) * maxSlotsPerPage && index <= slotPage * maxSlotsPerPage)
-    .map((s) => s.id);
+  if (!pollData || !userResponses) return <span>no data yet</span>;
 
   const isAllDeclined = userResponses.every((r) => {
     return r.response === NO_VOTE;
   });
+
+  const maxSlotsPerPage = 5;
+
   return (
-    <div>
-      Vote {pollId}
-      <div className="w-full max-w-[750px] overflow-hidden	 px-2 py-16 sm:px-0">
-        <PaginationRow
-          left={{
-            onClick: () => {
-              setSlotPage((p) => {
-                if (p > 1) return p - 1;
-                return p;
-              });
-            },
-            disabled: slotPage === 1,
-          }}
-          right={{
-            onClick: () => {
-              setSlotPage((p) => {
-                if (p < maxPage) return p + 1;
-                return p;
-              });
-            },
-            disabled: slotPage === maxPage,
-          }}
-          options={pollData.slots.length}
-        />
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `226px repeat(${displayedSlotsIds.length}, 90px [col-start])`,
-            gridTemplateRows: `1fr repeat(${participants.length},48px)`,
-            placeItems: "center",
-            gap: "10px 10px",
-          }}
-        >
-          <div className="flex h-full w-full flex-col justify-end">
-            <ParticipantNameLabel
-              participant={{
-                name: "You",
-                email: "",
-              }}
-            />
-          </div>
-          {slots
-            .filter((s) => displayedSlotsIds.includes(s.id))
-            .map((event) => {
-              return (
-                <SlotVote
-                  key={event.id.toString()}
-                  event={event}
-                  vote={userResponses.find((v) => v.id == event.id)?.response as string}
-                  setVote={(vote) => {
-                    setUserResponses(
-                      userResponses.map((v) => {
-                        if (v.id != event.id) return v;
-                        return { id: v.id, response: vote };
-                      })
-                    );
-                  }}
-                />
-              );
-            })}
-          <ResponsesTable displayedSlotsIds={displayedSlotsIds} pollData={pollData} />
+    <div className="flex h-full">
+      <OverviewPanel />
+
+      <div className="flex w-full w-[750px]	 flex-col px-2 pt-8 sm:px-0">
+        <div className="">
+          <h1 class="text-2xl font-normal" data-testid="instructions-main-title">
+            Select your preferred times
+          </h1>
+          <p class="chakra-text css-lr1cgg">We’ll let you know when the organizer picks the best time</p>
         </div>
-        <div className="mt-4 flex items-center justify-around">
+        <FullResponseTable maxSlotsPerPage={maxSlotsPerPage} />
+        <div className=" flex items-center justify-between border-t border-slate-300 px-4 py-4 ">
           <Button onClick={declineHandler} variant="secondary">
             Decline
           </Button>

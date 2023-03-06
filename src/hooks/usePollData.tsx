@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { db } from "../others/firebase";
 import { FsSlot, PollData, ParticipantFullInfo } from "../others/Types";
 
-export default function usePollData({ pollId, callback }: { pollId: string; callback?: (arg0: PollData) => void }) {
+export default function usePollData(pollId: string) {
   const [pollData, setPollData] = useState<PollData>();
   useEffect(() => {
     async function fetchData() {
@@ -25,6 +25,6 @@ export default function usePollData({ pollId, callback }: { pollId: string; call
       if (callback) callback(pollData);
     }
     fetchData();
-  }, []);
+  }, [pollId]);
   return pollData;
 }
