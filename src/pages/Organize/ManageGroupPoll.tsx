@@ -3,10 +3,9 @@ import { useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../others/firebase";
 import SlotDetails from "../../components/SlotDetails";
-import TickBoxYes from "../../components/TickBoxYes";
-import TickBoxNo from "../../components/TickBoxNo";
 import { getPollData } from "../../others/helpers";
 import usePollData from "../../hooks/usePollData";
+import TickBox from "../../components/TickBox";
 
 export default function ManageGroupPoll() {
   let params = useParams();
@@ -34,9 +33,9 @@ export default function ManageGroupPoll() {
         })}
         <div className="justify-self-start">eddy</div>
 
-        <TickBoxYes variant="table" />
-        <TickBoxYes variant="table" />
-        <TickBoxNo variant="table" />
+        <TickBox type="yes" variant="table" />
+        <TickBox type="yes" variant="table" />
+        <TickBox type="no" variant="table" />
       </div>
     </div>
   ) : (

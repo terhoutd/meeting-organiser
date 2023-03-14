@@ -1,12 +1,8 @@
 import React from "react";
-import TickboxIfneedbe from "./TickboxIfneedbe";
-import TickBoxNo from "./TickBoxNo";
-import TickBoxQuestion from "./TickBoxQuestion";
-import TickBoxYes from "./TickBoxYes";
-import { IFNEEDBE_VOTE, NO_VOTE, YES_VOTE } from "../others/Constants";
 import { FsSlot, PollData } from "../others/Types";
 import ParticipantNameLabel from "./ParticipantNameLabel";
 import SlotYesCount from "./SlotYesCount";
+import TickBox from "./TickBox";
 
 export default function ResponsesTable({
   pollData,
@@ -47,11 +43,11 @@ export default function ResponsesTable({
       <div
         style={{
           gridArea: "yes-count",
-          display: "grid",
           gridTemplateColumns: `repeat(${displayedSlotsIds.length},90px)`,
           // gap: " 10px",
           placeItems: "center",
         }}
+        className="hidden lg:grid"
       >
         {displayedSlots.map((s) => {
           return <SlotYesCount key={s.id} slotId={s.id} participants={sortedIncludedParticipants} />;
@@ -60,14 +56,14 @@ export default function ResponsesTable({
       <div
         style={{
           gridArea: "participants",
-          display: "grid",
-          gridTemplateColumns: `228px 490px`,
+          gridTemplateColumns: `228px 470px`,
           height: "200px",
-          overflowY: "scroll",
+          overflowY: "auto",
           gap: " 10px 0",
-          placeItems: "center",
-          paddingRight: "40px",
+          // placeItems: "center",
+          // paddingRight: "40px",
         }}
+        className="hidden lg:grid"
       >
         {sortedIncludedParticipants.map((participant) => (
           <React.Fragment key={participant.email}>
@@ -76,10 +72,7 @@ export default function ResponsesTable({
               {displayedSlots.map((ev) => {
                 const userVoteforEvent = participant.responses.find((uv) => uv.id === ev.id)?.response;
                 const key = ev.id;
-                if (userVoteforEvent == NO_VOTE) return <TickBoxNo variant="table" key={key} />;
-                if (userVoteforEvent == YES_VOTE) return <TickBoxYes variant="table" key={key} />;
-                if (userVoteforEvent == IFNEEDBE_VOTE) return <TickboxIfneedbe variant="table" key={key} />;
-                return <TickBoxQuestion variant="table" key={key} />;
+                return <TickBox type={userVoteforEvent || "question"} variant="table" key={key} />;
               })}
             </div>
           </React.Fragment>

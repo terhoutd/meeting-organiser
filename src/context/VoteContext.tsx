@@ -20,6 +20,9 @@ export function VoteProvider({ children }: { children: ReactNode }) {
   const [userResponses, setUserResponses] = useState<TimesResponse[]>();
 
   const [participant, setParticipant] = useState<Participant>();
+  const invitedParticipants = pollData?.participants.filter((p) => !p.isOrganiser);
+  const organizerParticipant = pollData?.participants.find((p) => p.isOrganiser);
+
   useEffect(() => {
     async function fetchData() {
       const pollDocRef = doc(db, "group polls", pollId);
@@ -54,6 +57,8 @@ export function VoteProvider({ children }: { children: ReactNode }) {
     setUserResponses,
     participant,
     setParticipant,
+    invitedParticipants,
+    organizerParticipant,
   };
   return <VoteContext.Provider value={value}>{children} </VoteContext.Provider>;
 }

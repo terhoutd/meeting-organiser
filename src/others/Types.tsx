@@ -23,5 +23,3 @@ export interface Participant {
 export interface ParticipantFullInfo extends Participant {
   responses: TimesResponse[];
 }
-
-export type TickBox = { variant: "table" | "slot-details" | "legend" | "legend-full" };

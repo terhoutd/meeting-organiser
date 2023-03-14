@@ -18,7 +18,7 @@ export default function FullResponseTable({ maxSlotsPerPage, variant }) {
     .filter((s, index) => index + 1 > (slotPage - 1) * maxSlotsPerPage && index + 1 <= slotPage * maxSlotsPerPage)
     .map((s) => s.id);
   return (
-    <div className="pl-8">
+    <div className="mb-[68px] lg:mb-0 lg:pl-8 ">
       <PaginationRow
         left={{
           onClick: () => {
@@ -43,7 +43,6 @@ export default function FullResponseTable({ maxSlotsPerPage, variant }) {
       />
       <div
         style={{
-          display: "grid",
           gridTemplateColumns: `228px 490px`,
           gridTemplateRows: `auto auto 200px`, //repeat(${participants.length},48px),
           gridTemplateAreas: `
@@ -54,8 +53,9 @@ export default function FullResponseTable({ maxSlotsPerPage, variant }) {
           // placeItems: "center",
           // gap: "10px",
         }}
+        className="flex flex-col lg:grid"
       >
-        <div className="flex h-full w-full flex-col justify-end" style={{ gridArea: "top-left" }}>
+        <div className="hidden h-full w-full flex-col justify-end lg:flex " style={{ gridArea: "top-left" }}>
           {isOverview ? (
             <div></div>
           ) : (
@@ -74,7 +74,7 @@ export default function FullResponseTable({ maxSlotsPerPage, variant }) {
 
             // gap: "10px",
           }}
-          className="pr- mt-4"
+          className="mb-[66px] mt-4 flex-col border-t border-slate-300 lg:mb-0 lg:flex-row lg:border-t-0"
         >
           {slots
             .filter((s) => displayedSlotsIds.includes(s.id))
@@ -84,7 +84,7 @@ export default function FullResponseTable({ maxSlotsPerPage, variant }) {
               ) : (
                 <SlotVote
                   key={event.id.toString()}
-                  event={event}
+                  slot={event}
                   vote={userResponses.find((v) => v.id == event.id)?.response as string}
                   setVote={(vote) => {
                     setUserResponses(

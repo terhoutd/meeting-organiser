@@ -1,9 +1,7 @@
 import React from "react";
 import SmallArrowSvg from "../assets/SmallArrowSvg";
-import TickboxIfneedbe from "./TickboxIfneedbe";
-import TickBoxNo from "./TickBoxNo";
-import TickBoxQuestion from "./TickBoxQuestion";
-import TickBoxYes from "./TickBoxYes";
+import ResponseLegend from "./ResponseLegend";
+import TickBox from "./TickBox";
 
 type PaginationButton = {
   onClick: () => void;
@@ -25,13 +23,9 @@ export default function PaginationRow({
   showLegend?: boolean;
 }) {
   return (
-    <div className={`flex px-4 ${showLegend ? "justify-between" : "justify-end"}`}>
-      <div className={`${showLegend ? "flex gap-2" : "hidden"}`}>
-        <TickBoxYes variant="legend" />
-        <TickboxIfneedbe variant="legend" />
-        <TickBoxNo variant="legend" />
-        <TickBoxQuestion variant="legend" />
-      </div>
+    <div className={`hidden px-4 lg:flex ${showLegend ? "justify-between" : "justify-end"}`}>
+      {showLegend && <ResponseLegend />}
+
       <div className={`${className ?? ""} flex items-center justify-end gap-2`}>
         <span>{options} options</span>
         <PaginationButton onClick={left.onClick} direction={"left"} disabled={left.disabled} />

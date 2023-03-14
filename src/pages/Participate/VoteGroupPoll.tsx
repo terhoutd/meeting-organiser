@@ -7,6 +7,7 @@ import Button from "../../components/Button";
 import { useVote } from "../../context/voteContext";
 import FullResponseTable from "../../components/FullResponseTable";
 import OverviewPanel from "../../components/OverviewPanel";
+import ResponseLegend from "../../components/ResponseLegend";
 
 export default function VoteGroupPoll() {
   let params = useParams();
@@ -36,22 +37,28 @@ export default function VoteGroupPoll() {
   const maxSlotsPerPage = 5;
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full flex-col lg:flex-row">
       <OverviewPanel />
 
-      <div className="flex w-full w-[750px]	 flex-col px-2 pt-8 sm:px-0">
-        <div className="">
-          <h1 class="text-2xl font-normal" data-testid="instructions-main-title">
+      <div className="flex w-[100vw] flex-col	 justify-between sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
+        <div className="mb-8 border-t border-slate-300 px-4  pt-4 lg:mb-0 lg:border-0 lg:pl-8">
+          <h1 className=" mb-2 text-lg font-medium lg:text-2xl lg:font-normal" data-testid="instructions-main-title">
             Select your preferred times
           </h1>
-          <p class="chakra-text css-lr1cgg">We’ll let you know when the organizer picks the best time</p>
+          <p className="">We’ll let you know when the organizer picks the best time</p>
         </div>
+
+        <div className=" mx-4 lg:hidden ">
+          <p className="mb-2 font-semibold">Availabilities</p>
+          <ResponseLegend column={false} extended={false} />
+        </div>
+
         <FullResponseTable maxSlotsPerPage={maxSlotsPerPage} />
-        <div className=" flex items-center justify-between border-t border-slate-300 px-4 py-4 ">
+        <div className="z-999 fixed left-0 bottom-0 flex w-full items-center justify-between border-t border-slate-300  bg-white py-3 px-4 shadow-[0_-5px_18px_rgb(161_167_171_/_50%)] lg:static lg:py-4 lg:shadow-none ">
           <Button onClick={declineHandler} variant="secondary">
             Decline
           </Button>
-          <span>Selecting more times makes it easier to find the best option</span>
+          <span className="hidden lg:inline-block">Selecting more times makes it easier to find the best option</span>
           <Button onClick={continueHandler} disabled={isAllDeclined}>
             Continue
           </Button>

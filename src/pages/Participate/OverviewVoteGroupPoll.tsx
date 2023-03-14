@@ -10,6 +10,8 @@ export default function OverviewVoteGroupPoll() {
   const { pollData, setPollId, userResponses, participant, setParticipant } = useVote();
   const navigate = useNavigate();
   console.log(userResponses);
+  if (!pollData || !userResponses) return <span>no data yet</span>;
+
   return (
     <>
       <div>OverviewVoteGroupPoll</div>

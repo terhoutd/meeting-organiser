@@ -15,7 +15,7 @@ export default function SlotYesCount({
     return response == YES_VOTE || response == IFNEEDBE_VOTE;
   }).length;
   return (
-    <div className="flex gap-1 py-1">
+    <div className="flex gap-1 py-4">
       <YesTickSvg className={"w-4"} />
       {YesCount}
     </div>
