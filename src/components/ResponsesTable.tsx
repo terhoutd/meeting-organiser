@@ -15,6 +15,7 @@ export default function ResponsesTable({
   excludedParticipantEmail?: string;
   polePositionParticipantEmail?: string;
 }) {
+  console.log("displayedSlotsIds", displayedSlotsIds);
   let sortedIncludedParticipants = [...pollData.participants.filter((p) => p.email !== excludedParticipantEmail)];
   const displayedSlots = pollData.slots.filter((s) => displayedSlotsIds.includes(s.id));
 

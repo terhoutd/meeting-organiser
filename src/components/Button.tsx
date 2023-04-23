@@ -2,11 +2,12 @@ import React, { Children, PropsWithChildren } from "react";
 
 type Button = {
   variant?: "primary" | "secondary";
-  onClick: (e: any) => void;
+  onClick?: (e: any) => void;
   disabled?: boolean;
   children: string;
+  type?: "submit";
 };
-export default function Button({ variant, onClick, disabled, children }: Button) {
+export default function Button({ variant, onClick, disabled, children, type }: Button) {
   let className;
   if (variant == "secondary") {
     className =

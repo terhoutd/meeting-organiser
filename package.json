@@ -11,11 +11,14 @@
   "dependencies": {
     "@headlessui/react": "^1.7.7",
     "firebase": "^9.16.0",
+    "formik": "^2.2.9",
+    "framer-motion": "^10.3.2",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-big-calendar": "^1.5.2",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.0"
+    "react-router-dom": "^6.8.0",
+    "yup": "^1.0.2"
   },
   "devDependencies": {
     "@headlessui/react": "^1.7.7",

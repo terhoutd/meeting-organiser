@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/Button";
-import FullResponseTable from "../../components/FullResponseTable";
 import { useVote } from "../../context/voteContext";
 
 export default function OverviewVoteGroupPoll() {

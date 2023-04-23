@@ -5,8 +5,6 @@ import { db } from "../others/firebase";
 import { TimesResponse, Participant, PollData } from "../others/Types";
 
 import { getDoc, getDocs, collection } from "firebase/firestore";
-//import React, { useEffect, useState } from "react";
-// import { db } from "../others/firebase";
 import { FsSlot, ParticipantFullInfo } from "../others/Types";
 
 const VoteContext = React.createContext({});
@@ -18,10 +16,20 @@ export function VoteProvider({ children }: { children: ReactNode }) {
   const [pollId, setPollId] = useState<string>();
   const [pollData, setPollData] = useState<PollData>();
   const [userResponses, setUserResponses] = useState<TimesResponse[]>();
-
   const [participant, setParticipant] = useState<Participant>();
+  const [sizeMode, setSizeMode] = useState<"desktop" | "mobile">(window.innerWidth >= 1024 ? "desktop" : "mobile");
+  const isDesktop = sizeMode === "desktop";
   const invitedParticipants = pollData?.participants.filter((p) => !p.isOrganiser);
   const organizerParticipant = pollData?.participants.find((p) => p.isOrganiser);
+
+  useEffect(() => {
+    function handleResize() {
+      setSizeMode(window.innerWidth >= 1024 ? "desktop" : "mobile");
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -45,9 +53,7 @@ export function VoteProvider({ children }: { children: ReactNode }) {
     if (!pollId) return;
     fetchData();
   }, [pollId]);
-  // console.log(pollDataTemp);
-  // setPollData(pollDataTemp);
-  //console.log("inside the context provider");
+
   const value = {
     test: "hello1",
     pollData,
@@ -59,6 +65,7 @@ export function VoteProvider({ children }: { children: ReactNode }) {
     setParticipant,
     invitedParticipants,
     organizerParticipant,
+    isDesktop,
   };
   return <VoteContext.Provider value={value}>{children} </VoteContext.Provider>;
 }

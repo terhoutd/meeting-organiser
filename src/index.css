@@ -55,9 +55,7 @@
   background-color: white;
   color: #2f3740;
 }
-body {
-  background-color: beige;
-}
+
 @media only screen and (max-width: 1024px) {
   #root {
     width: 100%;

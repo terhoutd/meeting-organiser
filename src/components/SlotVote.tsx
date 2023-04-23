@@ -8,7 +8,7 @@ import clsx from "clsx";
 import SlotYesCount from "./SlotYesCount";
 import { useVote } from "../context/voteContext";
 
-export default function SlotVote({ slot, vote, setVote }: { event: FsSlot; vote: string; setVote: any }) {
+export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: string; setVote: any }) {
   function handleClick() {
     let newVote = NO_VOTE;
     if (isNoVote) newVote = YES_VOTE;
@@ -26,7 +26,7 @@ export default function SlotVote({ slot, vote, setVote }: { event: FsSlot; vote:
     <label
       onClick={handleClick}
       className={clsx(
-        "flex cursor-pointer	items-center border-b  border-slate-300 p-4 lg:flex-col lg:justify-evenly lg:border-0 lg:p-0",
+        "flex cursor-pointer	items-center border-b  border-slate-300 p-4 lg:flex-col lg:justify-evenly lg:border-0 lg:p-0 lg:pt-4",
         isNoVote && " hover:bg-gray-50",
         isYesVote && " bg-lime-100",
         isIfneedbeVote && " bg-amber-200"
