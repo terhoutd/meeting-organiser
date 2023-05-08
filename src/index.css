@@ -50,7 +50,7 @@
 #root {
   font-family: "Fira Sans", sans-serif;
   width: 1000px;
-  height: 700px;
+  height: auto;
   margin: 40px auto;
   background-color: white;
   color: #2f3740;

@@ -26,20 +26,22 @@ export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: 
     <label
       onClick={handleClick}
       className={clsx(
-        "flex cursor-pointer	items-center border-b  border-slate-300 p-4 lg:flex-col lg:justify-evenly lg:border-0 lg:p-0 lg:pt-4",
+        "flex cursor-pointer	items-center justify-between  border-b border-slate-300 p-4 lg:flex-col lg:justify-evenly lg:border-0 lg:p-0 lg:pt-4",
         isNoVote && " hover:bg-gray-50",
         isYesVote && " bg-lime-100",
         isIfneedbeVote && " bg-amber-200"
       )}
     >
       <SlotDetails event={slot} />
-      <div className="mr-2 lg:hidden ">
-        <SlotYesCount key={slot.id} slotId={slot.id} participants={invitedParticipants} />
-      </div>
+      <div className="flex items-center">
+        <div className="mr-2 lg:hidden ">
+          <SlotYesCount key={slot.id} slotId={slot.id} participants={invitedParticipants} />
+        </div>
 
-      <div className={clsx("my-3 flex h-6 w-6 justify-center rounded border border-gray-500 bg-white")}>
-        {isYesVote && <YesTickSvg className="w-4 bg-white text-lime-500" />}
-        {isIfneedbeVote && <IfNeedBeSvg className="w-4 bg-white" />}
+        <div className={clsx("my-3 flex h-6 w-6 justify-center rounded border border-gray-500 bg-white")}>
+          {isYesVote && <YesTickSvg className="w-4 bg-white text-lime-500" />}
+          {isIfneedbeVote && <IfNeedBeSvg className="w-4 bg-white" />}
+        </div>
       </div>
     </label>
   );

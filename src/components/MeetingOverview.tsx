@@ -6,7 +6,7 @@ import TickBox from "./TickBox";
 
 export default function MeetingOverview() {
   return (
-    <div className={" w-full lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
+    <div>
       <EventMetaData />
       <div className="hidden lg:block">
         <ResponseLegend column={true} extended={true} />

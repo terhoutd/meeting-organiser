@@ -8,7 +8,7 @@ import SmallArrowSvg from "../assets/SmallArrowSvg";
 import { useVote } from "../context/voteContext";
 import ParticipantNameLabel from "./ParticipantNameLabel";
 
-export default function EventMetaData() {
+export default function EventMetaData({ excludeParticipantCount }: { excludeParticipantCount?: boolean }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { pollData, invitedParticipants, organizerParticipant } = useVote();
   console.log("pollData", pollData);
@@ -27,28 +27,28 @@ export default function EventMetaData() {
       >
         <SmallArrowSvg orientation={isExpanded ? "up" : "down"} />
       </button>
-      <div className="mb-2 lg:mb-4 ">
+      <div className="mb-2 lg:mb-2 ">
         <ParticipantNameLabel participant={organizerParticipant} />
       </div>
-      <div className={` mb-2  text-lg font-medium lg:mb-4`}>{pollData.title}</div>
-      <div className="mb-2  flex items-center gap-3  lg:mb-4">
+      <div className={` mb-2  text-lg font-medium lg:mb-2`}>{pollData.title}</div>
+      <div className="mb-2  flex items-center gap-3  lg:mb-2">
         <ClockSvg />
         <span>30 minutes</span>
       </div>
-      <div className={`${isExpanded ? "flex" : "hidden"} mb-2 items-center gap-3 lg:mb-4 lg:flex`}>
+      <div className={`${isExpanded ? "flex" : "hidden"} mb-2 items-center gap-3 lg:mb-2 lg:flex`}>
         <PinSvg />
         <span>bla</span>
       </div>
-      <div className={`${isExpanded ? "flex" : "hidden"} mb-2  items-center  gap-3 lg:mb-4 lg:flex`}>
+      <div className={`${isExpanded ? "flex" : "hidden"} mb-2  items-center  gap-3 lg:mb-2 lg:flex`}>
         <PlanetSvg />
         <span>uk</span>
       </div>
-      <div className={`${isExpanded ? "flex" : "hidden"} mb-2  items-center  gap-3 lg:mb-4 lg:flex`}>
+      <div className={`${isExpanded ? "flex" : "hidden"} mb-2  items-center  gap-3 lg:mb-2 lg:flex`}>
         <DescSvg />
         <span>description</span>
       </div>
-      {participantsCount > 0 && (
-        <div className={`mb-2 flex items-center gap-3  lg:mb-4`}>
+      {!excludeParticipantCount && participantsCount > 0 && (
+        <div className={`mb-2 flex items-center gap-3  lg:mb-2`}>
           <InviteesSvg />
           <span>
             {participantsCount.toString()} of {participantsCount.toString()} invitees responded

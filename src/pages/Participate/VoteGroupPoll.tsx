@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { NO_VOTE } from "../../others/Constants";
@@ -8,13 +8,8 @@ import { useVote } from "../../context/voteContext";
 import MeetingOverview from "../../components/MeetingOverview";
 import ResponseLegend from "../../components/ResponseLegend";
 import ParticipationHeaders from "../../components/ParticipationHeader";
-import PaginationWrapper, { PaginationContext } from "../../components/PaginationWrapper";
-import { AnimatePresence } from "framer-motion";
-import { MotionDiv } from "../../components/MotionDiv";
-import ParticipantNameLabel from "../../components/ParticipantNameLabel";
-import ResponsesTable from "../../components/ResponsesTable";
-import SlotDetails from "../../components/SlotDetails";
-import SlotVote from "../../components/SlotVote";
+import PaginationWrapper from "../../components/PaginationWrapper";
+import { VoteTable } from "../../components/VoteTable";
 
 export default function VoteGroupPoll() {
   let params = useParams();
@@ -46,16 +41,18 @@ export default function VoteGroupPoll() {
   const maxSlotsPerPage = 5;
 
   return (
-    <div className="flex h-full flex-col lg:flex-row">
-      <MeetingOverview />
-
+    <div className="flex  h-[700px] flex-col lg:flex-row">
+      <div className={" w-full lg:w-[250px] border-b lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
+        <MeetingOverview />
+      </div>
       <div className=" relative w-full sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
         <div className="flex  flex-col	 justify-between lg:mx-8 lg:mt-8">
-          <ParticipationHeaders
-            mainText="Select your preferred times"
-            subText="We’ll let you know when the organizer picks the best time"
-          />
-
+          <div className="mx-4">
+            <ParticipationHeaders
+              mainText="Select your preferred times"
+              subText="We’ll let you know when the organizer picks the best time"
+            />
+          </div>
           <div className=" mx-4 lg:hidden ">
             <p className="mb-2 font-semibold">Availabilities</p>
             <ResponseLegend column={false} extended={false} />
@@ -93,78 +90,4 @@ export default function VoteGroupPoll() {
   function continueHandler(e) {
     navigate(urlConfirmPage);
   }
-}
-
-function VoteTable() {
-  const { test, pollData, setPollId, userResponses, setUserResponses, participant, isDesktop } = useVote();
-  console.log("isDesktop", isDesktop);
-  console.log(pollData);
-  const { slotsShown, isOverview } = useContext(PaginationContext);
-  console.log("isOverview in VoteTable", isOverview);
-  if (!slotsShown) return <span>no data yet</span>;
-  return (
-    <div
-      style={{
-        gridTemplateColumns: `228px 490px`,
-        gridTemplateRows: `auto auto 200px`, //repeat(${participants.length},48px),
-        gridTemplateAreas: `
-'top-left${" slots".repeat(slotsShown.length)} '
-'.${" yes-count".repeat(slotsShown.length)}'
-'${" participants".repeat(slotsShown.length + 1)}'
-`,
-      }}
-      className="flex flex-col lg:grid"
-    >
-      <div className="hidden h-full w-full flex-col justify-end lg:flex " style={{ gridArea: "top-left" }}>
-        {isOverview ? (
-          <div></div>
-        ) : (
-          <ParticipantNameLabel
-            participant={{
-              name: "You",
-              email: "",
-            }}
-          />
-        )}
-      </div>
-      <div
-        style={{ gridArea: "slots" }}
-        className=" mb-[66px] mt-4 flex flex-col border-t border-slate-300 lg:mb-0 lg:flex-row lg:border-t-0"
-      >
-        <AnimatePresence initial={false} mode={"wait"}>
-          {pollData.slots
-            .filter((s) => slotsShown.includes(s.id))
-            .map((event) => {
-              return (
-                <MotionDiv key={event.id}>
-                  {isOverview ? (
-                    <SlotDetails key={event.id.toString()} event={event} />
-                  ) : (
-                    <SlotVote
-                      key={event.id.toString()}
-                      slot={event}
-                      vote={userResponses.find((v) => v.id == event.id)?.response as string}
-                      setVote={(vote) => {
-                        setUserResponses(
-                          userResponses.map((v) => {
-                            if (v.id != event.id) return v;
-                            return { id: v.id, response: vote };
-                          })
-                        );
-                      }}
-                    />
-                  )}
-                </MotionDiv>
-              );
-            })}
-        </AnimatePresence>
-      </div>
-      <ResponsesTable
-        displayedSlotsIds={slotsShown}
-        pollData={pollData}
-        excludedParticipantEmail={isOverview ? "" : participant?.email}
-        polePositionParticipantEmail={isOverview ? participant.email : ""}
-      />
-    </div>
-  );
 }

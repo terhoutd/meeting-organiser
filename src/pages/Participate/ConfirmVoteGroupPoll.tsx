@@ -14,11 +14,12 @@ import { useVote } from "../../context/voteContext";
 import usePollData from "../../hooks/usePollData";
 import { NO_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
-import { FsSlot } from "../../others/Types";
+import { FsSlot, PollData } from "../../others/Types";
 
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { CustomInput } from "../../components/CustomInput";
+import SelectedSlot from "../../components/SelectedSlot";
 
 const emailMessage = "We need your email to send you the final event details.";
 const DisplayingErrorMessagesSchema = Yup.object().shape({
@@ -29,25 +30,31 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
   email: Yup.string().email(emailMessage).required(emailMessage),
 });
 
+type onSubmitValue = {
+  username: string;
+  email: string;
+};
 export default function ConfirmVoteGroupPoll() {
-  async function voteHandler(values) {
-    console.log(values);
-    await uploadParticipantInfo(pollId, { name: values.username, email: values.email, responses: userResponses });
-    setPollData((pd) => {
+  async function voteHandler(values: onSubmitValue) {
+    console.log("voteHandler", values);
+    const newParticipant = { name: values.username, email: values.email, responses: userResponses };
+    //update to firestore
+    await uploadParticipantInfo(pollId, newParticipant);
+    //replicate update locally
+    setPollData((pd: PollData) => {
       const newPollData = { ...pd };
       const currentParticipant = newPollData.participants.find((p) => p.email === email);
       if (currentParticipant) currentParticipant.responses = userResponses;
-      else newPollData.participants.push({ name: name, email: email, responses: userResponses });
+      else newPollData.participants.push(newParticipant);
       console.log("newPollData", newPollData);
       return newPollData;
     });
-    setParticipant({ name: name, email: email });
+    setParticipant({ name: values.username, email: values.email });
     navigate(`/meeting/participate/id/${pollId}`);
   }
 
   let params = useParams();
   const pollId = params.groupPollId || "";
-
   const navigate = useNavigate();
 
   const { pollData, setPollData, setPollId, userResponses, participant, setParticipant } = useVote();
@@ -68,8 +75,10 @@ export default function ConfirmVoteGroupPoll() {
   const maxSlotsPerPage = 7;
 
   return (
-    <div className="flex h-full flex-col lg:flex-row">
-      <MeetingOverview />
+    <div className="flex h-[700px] flex-col lg:flex-row">
+      <div className={" w-full lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
+        <MeetingOverview />
+      </div>
 
       <div className=" flex w-[100vw]  flex-col border-t border-slate-300 px-4 lg:w-[750px] lg:border lg:border-slate-300 lg:px-8  lg:pt-8">
         <ParticipationHeaders
@@ -92,7 +101,7 @@ export default function ConfirmVoteGroupPoll() {
             email: participant?.email || "",
           }}
           validationSchema={DisplayingErrorMessagesSchema}
-          onSubmit={(values) => {
+          onSubmit={(values: onSubmitValue) => {
             // same shape as initial values
             console.log(values);
             voteHandler(values);
@@ -142,115 +151,7 @@ export default function ConfirmVoteGroupPoll() {
       </div>
     </div>
   );
-  return (
-    <div className="flex h-full flex-col lg:flex-row">
-      <MeetingOverview />
-      <div className="flex w-[100vw] flex-col	 justify-between sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
-        <div className="mb-8 border-t border-slate-300 px-4  pt-4 lg:mb-0 lg:border-0 lg:pl-8">
-          <h1 className=" mb-2 text-lg font-medium lg:text-2xl lg:font-normal">Let’s confirm your selection</h1>
-          {acceptedSlots.length == 0 ? (
-            <p> You have declined this event</p>
-          ) : (
-            <p>You’re submitting the following times</p>
-          )}
-        </div>
-        <>
-          <PaginationRow
-            showTip={false}
-            left={{
-              onClick: () => {
-                setSlotPage((p) => {
-                  if (p > 1) return p - 1;
-                  return p;
-                });
-              },
-              disabled: slotPage === 1,
-            }}
-            right={{
-              onClick: () => {
-                setSlotPage((p) => {
-                  if (p < maxPage) return p + 1;
-                  return p;
-                });
-              },
-              disabled: slotPage === maxPage,
-            }}
-            options={pollData.slots.length}
-            className={"mt-3 mb-4"}
-          />
-          <div
-            style={{
-              gridArea: "slots",
-              display: "flex",
 
-              // gap: "10px",
-            }}
-            className="mb-[66px] mt-4 flex-col border-t border-slate-300 lg:mb-0 lg:flex-row lg:border-t-0"
-          >
-            <AnimatePresence initial={false} mode={"wait"}>
-              {displayedAcceptedSlots.map((r) => {
-                return (
-                  <motion.div
-                    key={r.id.toString()}
-                    initial={{ x: rightPagination ? 50 : -50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <SlotDetails key={r.id.toString()} event={r.slot} response={r.response} />
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
-        </>
-
-        <Link className="font-medium text-blue-600	" to="/meeting/participate/id/${pollId}/vote/">
-          Change
-        </Link>
-        <form onSubmit={voteHandler}>
-          {!participant && (
-            <>
-              <div className="mt-6">
-                <label className="block" htmlFor="name">
-                  Your name
-                </label>
-                <input
-                  required
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className=" block w-full border-2"
-                />
-              </div>
-              <div>
-                <label className="block" htmlFor="email">
-                  Your email
-                </label>
-                <input
-                  required
-                  type="text"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border-2"
-                />
-              </div>
-            </>
-          )}
-
-          <div className="mt-7 flex gap-6">
-            <Button onClick={backHandler} variant="secondary">
-              Back
-            </Button>
-            <Button onClick={voteHandler} variant="primary" disabled={!name || !email}>
-              Submit response
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
   function backHandler() {
     navigate(`/meeting/participate/id/${pollId}/vote/`);
   }
@@ -277,12 +178,7 @@ function SelectedSlots() {
 
           return (
             <MotionDiv key={slotData.id}>
-              <SlotDetails
-                key={slotData.id.toString()}
-                event={slotData}
-                response={responseData.response}
-                variant="slot-details"
-              />
+              <SelectedSlot key={slotData.id.toString()} event={slotData} response={responseData.response} />
             </MotionDiv>
           );
         })}

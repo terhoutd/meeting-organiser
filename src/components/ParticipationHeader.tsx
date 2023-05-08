@@ -5,7 +5,7 @@ type ParticipationHeadersProps = {
 };
 export default function ParticipationHeaders({ mainText, subText }: ParticipationHeadersProps) {
   return (
-    <div className="mb-8  px-4  pt-4 lg:mb-0 lg:p-0">
+    <div className="mb-8   border-slate-300 pt-4   lg:mb-0 lg:border-0 lg:p-0">
       <h1 className=" mb-2 text-lg font-medium lg:text-[27px] lg:font-normal" data-testid="instructions-main-title">
         {mainText}
       </h1>
