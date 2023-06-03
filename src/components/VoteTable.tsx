@@ -72,12 +72,7 @@ export function VoteTable() {
             })}
         </AnimatePresence>
       </div>
-      <ResponsesTable
-        displayedSlotsIds={slotsShown}
-        pollData={pollData}
-        excludedParticipantEmail={isOverview ? "" : participant?.email}
-        polePositionParticipantEmail={isOverview ? participant.email : ""}
-      />
+      <ResponsesTable displayedSlotsIds={slotsShown} pollData={pollData} variant={isOverview ? "overview" : "vote"} />
     </div>
   );
 }

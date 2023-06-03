@@ -50,14 +50,14 @@ export default function TickBox({ type, variant }: TickBoxType) {
         className={`flex ${
           isLegend || isLegendFull ? "h-6 w-6 shrink-0" : "h-full w-full"
         } items-center justify-center ${clsx(
-          (isYes || isYesThin) && "bg-lime-100",
+          (isYes || isYesThin) && "bg-emerald-100",
           (isNo || isNoThin) && "bg-gray-50",
           isIfneedbe && "bg-yellow-100",
           isQuestion && "bg-gray-200",
           isPending && "bg-gray-100"
         )}`}
       >
-        {isYes && <YesTickSvg className={`${isTable ? "w-7" : "w-4"} text-lime-700`} />}
+        {isYes && <YesTickSvg className={`${isTable ? "w-7" : "w-4"} text-green-700`} />}
         {isYesThin && <YesThinTick className={`${isTable ? "w-7" : "w-5"} text-lime-700`} />}
 
         {isNo && <NoTickSvg className={`${isTable ? "w-7" : "w-4"} text-slate-400`} />}

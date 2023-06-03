@@ -28,7 +28,7 @@ export default function PaginationRow({
     <div className={`hidden px-4 lg:flex lg:p-0 ${showLegend ? "justify-between" : "justify-end"} relative`}>
       {showLegend && <ResponseLegend />}
 
-      <div className={`${className ?? ""} flex items-center justify-end gap-2`}>
+      <div className={`${className ?? ""} flex items-center justify-end gap-2 pr-6`}>
         <span>{options} options</span>
         <PaginationButton onClick={left.onClick} direction={"left"} disabled={left.disabled} />
         <PaginationButton onClick={right.onClick} direction={"right"} disabled={right.disabled} />
@@ -55,7 +55,7 @@ function PaginationButton({ disabled, onClick, direction }: PaginationButton) {
 function PaginationTip() {
   const [showTip, setShowTip] = useState(true);
   return !showTip ? null : (
-    <div className=" absolute -top-[26px] right-[44px] z-40 flex h-[95px] w-[320px] flex-col justify-between  rounded-md bg-blue-600 py-3 px-4 text-white">
+    <div className=" absolute -top-[26px] right-[68px] z-40 flex h-[95px] w-[320px] flex-col justify-between  rounded-md bg-blue-600 py-3 px-4 text-white">
       <span className="self-start">More times are available</span>
       <button
         onClick={() => {

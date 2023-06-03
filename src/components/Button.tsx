@@ -5,9 +5,8 @@ type Button = {
   onClick?: (e: any) => void;
   disabled?: boolean;
   children: string;
-  type?: "submit";
 };
-export default function Button({ variant, onClick, disabled, children, type }: Button) {
+export default function Button({ variant, onClick, disabled, children }: Button) {
   let className;
   if (variant == "secondary") {
     className =

@@ -3,18 +3,27 @@ import { FsSlot, PollData } from "../others/Types";
 import ParticipantNameLabel from "./ParticipantNameLabel";
 import SlotYesCount from "./SlotYesCount";
 import TickBox from "./TickBox";
+import { useVote } from "../context/voteContext";
 
 export default function ResponsesTable({
   pollData,
   displayedSlotsIds,
-  excludedParticipantEmail,
-  polePositionParticipantEmail,
+  variant = "vote",
 }: {
   pollData: PollData;
   displayedSlotsIds: any[];
-  excludedParticipantEmail?: string;
-  polePositionParticipantEmail?: string;
+  variant?: string;
 }) {
+  const { participant } = useVote();
+  let excludedParticipantEmail = "";
+  let polePositionParticipantEmail = "";
+  if (variant == "vote") {
+    excludedParticipantEmail = participant?.email;
+  } else if (variant == "overview") {
+    polePositionParticipantEmail = participant.email;
+  } else {
+    throw new Error("you should never see this");
+  }
   console.log("displayedSlotsIds", displayedSlotsIds);
   let sortedIncludedParticipants = [...pollData.participants.filter((p) => p.email !== excludedParticipantEmail)];
   const displayedSlots = pollData.slots.filter((s) => displayedSlotsIds.includes(s.id));
@@ -58,9 +67,10 @@ export default function ResponsesTable({
         style={{
           gridArea: "participants",
           gridTemplateColumns: `228px 470px`,
-          height: "200px",
+          gridTemplateRows: `repeat(${sortedIncludedParticipants.length}, 48px)`,
+          height: "216px",
           overflowY: "auto",
-          gap: " 10px 0",
+          gap: " 8px 0",
           // placeItems: "center",
           // paddingRight: "40px",
         }}
