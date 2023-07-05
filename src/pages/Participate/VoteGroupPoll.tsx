@@ -42,7 +42,7 @@ export default function VoteGroupPoll() {
 
   return (
     <div className="flex  h-[700px] flex-col lg:flex-row">
-      <div className={" w-full lg:w-[250px] border-b lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
+      <div className={" w-full border-b lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
         <MeetingOverview />
       </div>
       <div className=" relative w-full sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
@@ -59,7 +59,12 @@ export default function VoteGroupPoll() {
           </div>
 
           <div className=" ">
-            <PaginationWrapper slotList={pollData.slots} maxSlotsPerPage={maxSlotsPerPage} variant="vote">
+            <PaginationWrapper
+              slotList={pollData.slots}
+              maxSlotsPerPage={maxSlotsPerPage}
+              showLegend={false}
+              showTip={false}
+            >
               <VoteTable />
             </PaginationWrapper>
           </div>

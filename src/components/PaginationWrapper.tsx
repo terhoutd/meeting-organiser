@@ -5,7 +5,7 @@ import PaginationRow from "./PaginationRow";
 
 export const PaginationContext = React.createContext({});
 
-export default function PaginationWrapper({ children, maxSlotsPerPage, variant, slotList }) {
+export default function PaginationWrapper({ children, maxSlotsPerPage, slotList, showLegend, showTip }) {
   const { pollData, isDesktop } = useVote();
   if (!pollData) return null;
   const { participants }: { slots: FsSlot[]; participants: ParticipantFullInfo[] } = pollData;
@@ -58,7 +58,8 @@ export default function PaginationWrapper({ children, maxSlotsPerPage, variant, 
         left={leftPaginationConfig}
         right={rightPaginationConfig}
         options={pollData.slots.length}
-        showLegend={isOverview}
+        showLegend={showLegend}
+        showTip={showTip}
       />
 
       {children}

@@ -4,7 +4,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/Button";
 import MeetingOverview from "../../components/MeetingOverview";
 import { MotionDiv } from "../../components/MotionDiv";
-import PaginationRow from "../../components/PaginationRow";
 import PaginationWrapper, { PaginationContext } from "../../components/PaginationWrapper";
 import ParticipationHeaders from "../../components/ParticipationHeader";
 import ResponseLegend from "../../components/ResponseLegend";
@@ -87,7 +86,12 @@ export default function ConfirmVoteGroupPoll() {
         />
 
         <div className="mb-2 lg:mb-0 ">
-          <PaginationWrapper slotList={acceptedSlots} maxSlotsPerPage={maxSlotsPerPage} variant="vote">
+          <PaginationWrapper
+            slotList={acceptedSlots}
+            maxSlotsPerPage={maxSlotsPerPage}
+            showLegend={false}
+            showTip={false}
+          >
             <SelectedSlots />
           </PaginationWrapper>
         </div>

@@ -73,8 +73,13 @@ export default function OverviewVoteGroupPoll() {
           </div>
 
           <div className="pl-8 ">
-            <PaginationWrapper slotList={pollData.slots} maxSlotsPerPage={maxSlotsPerPage} variant="overview">
-              <VoteTable />
+            <PaginationWrapper
+              slotList={pollData.slots}
+              maxSlotsPerPage={maxSlotsPerPage}
+              showLegend={true}
+              showTip={false}
+            >
+              <VoteTable readOnly={true} />
             </PaginationWrapper>
           </div>
         </div>

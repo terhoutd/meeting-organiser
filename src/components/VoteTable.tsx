@@ -8,12 +8,11 @@ import ResponsesTable from "./ResponsesTable";
 import SlotDetails from "./SlotDetails";
 import SlotVote from "./SlotVote";
 
-export function VoteTable() {
+export function VoteTable({ readOnly = false }: { readOnly?: boolean }) {
   const { test, pollData, setPollId, userResponses, setUserResponses, participant, isDesktop } = useVote();
   console.log("isDesktop", isDesktop);
   console.log(pollData);
-  const { slotsShown, isOverview } = useContext(PaginationContext);
-  console.log("isOverview in VoteTable", isOverview);
+  const { slotsShown } = useContext(PaginationContext);
   if (!slotsShown) return <span>no data yet</span>;
   return (
     <div
@@ -29,7 +28,7 @@ export function VoteTable() {
       className="flex flex-col lg:grid"
     >
       <div className="hidden h-full w-full flex-col justify-end lg:flex " style={{ gridArea: "top-left" }}>
-        {isOverview ? (
+        {readOnly ? (
           <div></div>
         ) : (
           <ParticipantNameLabel
@@ -50,7 +49,7 @@ export function VoteTable() {
             .map((event) => {
               return (
                 <MotionDiv key={event.id}>
-                  {isOverview ? (
+                  {readOnly ? (
                     <SlotDetails key={event.id.toString()} event={event} />
                   ) : (
                     <SlotVote
@@ -72,7 +71,12 @@ export function VoteTable() {
             })}
         </AnimatePresence>
       </div>
-      <ResponsesTable displayedSlotsIds={slotsShown} pollData={pollData} variant={isOverview ? "overview" : "vote"} />
+      <ResponsesTable
+        displayedSlotsIds={slotsShown}
+        pollData={pollData}
+        variant={readOnly ? "overview" : "vote"}
+        currentParticipantPosition={readOnly ? "top" : "exclude"}
+      />
     </div>
   );
 }

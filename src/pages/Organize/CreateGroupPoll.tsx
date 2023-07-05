@@ -83,9 +83,10 @@ function CreateGroupPoll() {
   );
   return (
     <div className="">
+      <h1 className="border-b p-6 text-4xl ">Create group poll</h1>
       <form onSubmit={createPollHandler}>
-        <div className="w-full max-w-md px-2 py-16 sm:px-0">
-          <div>
+        <div className="w-full px-2 sm:px-0">
+          <div className="mx-4 my-7 flex flex-col">
             <label htmlFor="title">Title of your poll</label>
             <input
               required
@@ -93,10 +94,10 @@ function CreateGroupPoll() {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="m-2 border-2"
+              className="py4 border-2 px-2 py-2"
             />
           </div>
-          <div>
+          <div className="mx-4 my-7 flex flex-col">
             <label htmlFor="name">Your name</label>
             <input
               required
@@ -104,10 +105,10 @@ function CreateGroupPoll() {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="m-2 border-2"
+              className="py4 border-2 px-2 py-2"
             />
           </div>
-          <div>
+          <div className="mx-4 my-7 flex flex-col">
             <label htmlFor="email">Your email</label>
             <input
               required
@@ -115,12 +116,12 @@ function CreateGroupPoll() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="m-2 border-2"
+              className="py4 border-2 px-2 py-2"
             />
           </div>
 
           <Tab.Group>
-            <Tab.List className="flex space-x-0.5 rounded-sm">
+            <Tab.List className="space-x-0.7 flex rounded-sm">
               {durations.map((d) => (
                 <Tab
                   key={d.title}
@@ -156,7 +157,7 @@ function CreateGroupPoll() {
           />
         </div>
         <div className="flex justify-end">
-          <input type="submit" className="mr-5 mt-5 bg-blue-600 p-3 text-white" value={"create invite and continue"} />
+          <input type="submit" className="mr-7 mt-7 bg-blue-600 p-3 text-white" value={"create invite and continue"} />
         </div>
       </form>
     </div>

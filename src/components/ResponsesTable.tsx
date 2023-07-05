@@ -9,27 +9,26 @@ export default function ResponsesTable({
   pollData,
   displayedSlotsIds,
   variant = "vote",
+  currentParticipantPosition = "exclude",
 }: {
   pollData: PollData;
   displayedSlotsIds: any[];
   variant?: string;
+  currentParticipantPosition?: "exclude" | "top";
 }) {
   const { participant } = useVote();
-  let excludedParticipantEmail = "";
-  let polePositionParticipantEmail = "";
-  if (variant == "vote") {
-    excludedParticipantEmail = participant?.email;
-  } else if (variant == "overview") {
-    polePositionParticipantEmail = participant.email;
-  } else {
-    throw new Error("you should never see this");
-  }
+
   console.log("displayedSlotsIds", displayedSlotsIds);
-  let sortedIncludedParticipants = [...pollData.participants.filter((p) => p.email !== excludedParticipantEmail)];
+  let sortedIncludedParticipants = [
+    ...pollData.participants.filter((p) => {
+      if (currentParticipantPosition == "exclude") return p.email !== participant.email;
+      return true;
+    }),
+  ];
   const displayedSlots = pollData.slots.filter((s) => displayedSlotsIds.includes(s.id));
 
   sortedIncludedParticipants.sort((a, b) => {
-    if (a.email === polePositionParticipantEmail) return -1;
+    if (currentParticipantPosition == "top" && a.email === participant.email) return -1;
     if (a.isOrganiser) return -1;
     const nameA = a.name.toUpperCase(); // ignore upper and lowercase
     const nameB = b.name.toUpperCase(); // ignore upper and lowercase
