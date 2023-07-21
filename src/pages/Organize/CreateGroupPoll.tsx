@@ -1,10 +1,17 @@
 import { useCallback, useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, momentLocalizer, stringOrDate } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import { v4 as uuidv4 } from "uuid";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+
+import "../../calendar.css";
 import { Tab } from "@headlessui/react";
 import Toolbar from "../../components/Toolbar";
 const localizer = momentLocalizer(moment);
+const DnDCalendar = withDragAndDrop(Calendar);
+
 import clsx from "clsx";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -68,36 +75,41 @@ function CreateGroupPoll() {
       console.error("Error adding document: ", e);
     }
   };
-  const handleSelectSlot = useCallback(
-    ({ start, end }: { start: Date; end: Date }) => {
+  const handleSelectSlot = useCallback(({ start, end }: { start: Date; end: Date }) => {
+    setEvents((prev) => {
+      const id = uuidv4();
+      const title = "";
+      const newEv = { start, end, title, id };
+      const newEvList = [...prev, newEv];
+      console.log(newEvList);
+      return newEvList;
+    });
+  }, []);
+
+  const onEventDrop = useCallback(
+    ({ start, end, event }: { start: stringOrDate; end: stringOrDate; event: object }) => {
       setEvents((prev) => {
-        const id = prev.length;
-        const title = "";
-        const newEv = { start, end, title, id };
-        const newEvList = [...prev, newEv];
-        console.log(newEvList);
-        return newEvList;
+        // const newEv = { start, end, title, id };
+        const foundEv = prev.find((ev) => ev.id === event.id);
+        if (!foundEv) return prev;
+        foundEv.start = start;
+        foundEv.end = end;
+        console.log(prev);
+        return prev;
       });
     },
-    [setEvents]
+    []
   );
+
   return (
     <div className="">
-      <h1 className="border-b p-6 text-4xl ">Create group poll</h1>
       <form onSubmit={createPollHandler}>
-        <div className="w-full px-2 sm:px-0">
-          <div className="mx-4 my-7 flex flex-col">
-            <label htmlFor="title">Title of your poll</label>
-            <input
-              required
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="py4 border-2 px-2 py-2"
-            />
-          </div>
-          <div className="mx-4 my-7 flex flex-col">
+        <div className=":px-0 w-full border border-zinc-100 bg-white">
+          <h1 className="border-b px-8 py-8 text-4xl ">Create group poll</h1>
+          <div
+            className="mx-8 my-8
+           flex flex-col"
+          >
             <label htmlFor="name">Your name</label>
             <input
               required
@@ -108,7 +120,7 @@ function CreateGroupPoll() {
               className="py4 border-2 px-2 py-2"
             />
           </div>
-          <div className="mx-4 my-7 flex flex-col">
+          <div className="mx-8 my-8 flex flex-col">
             <label htmlFor="email">Your email</label>
             <input
               required
@@ -119,9 +131,23 @@ function CreateGroupPoll() {
               className="py4 border-2 px-2 py-2"
             />
           </div>
-
+          <div className="mx-8 my-8 flex flex-col">
+            <label htmlFor="title">Title of your poll</label>
+            <input
+              required
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="py4 border-2 px-2 py-2"
+            />
+          </div>
+        </div>
+        <div className="mt-2 w-full border border-zinc-100 bg-white  px-8 py-8 ">
+          <h2 className="pb-4  text-3xl ">Add your times</h2>
+          <label className="my-2 block">Duration</label>
           <Tab.Group>
-            <Tab.List className="space-x-0.7 flex rounded-sm">
+            <Tab.List className="mb-4 flex rounded-sm">
               {durations.map((d) => (
                 <Tab
                   key={d.title}
@@ -130,8 +156,8 @@ function CreateGroupPoll() {
                   }}
                   className={({ selected }) =>
                     clsx(
-                      "w-full rounded-none py-2 text-gray-500 ring-2 focus:outline-none",
-                      selected ? " bg-blue-600 text-white ring-blue-700" : ""
+                      "rounded-none border-2 py-2 px-6 focus:outline-none",
+                      selected ? " border-blue-700 bg-blue-600 text-white" : "text-gray-500 "
                     )
                   }
                 >
@@ -140,22 +166,25 @@ function CreateGroupPoll() {
               ))}
             </Tab.List>
           </Tab.Group>
+          <div className="" style={{ height: "660px" }}>
+            <DnDCalendar
+              localizer={localizer}
+              events={events}
+              onSelectSlot={handleSelectSlot}
+              selectable
+              onSelecting={() => false}
+              step={step}
+              views={["week"]}
+              defaultView={"week"}
+              timeslots={1 * (60 / step)}
+              toolbar={true}
+              components={components as any}
+              onEventDrop={onEventDrop}
+              resizable={false}
+            />
+          </div>
         </div>
-        <div className="" style={{ height: "660px" }}>
-          <Calendar
-            localizer={localizer}
-            events={events}
-            onSelectSlot={handleSelectSlot}
-            selectable
-            onSelecting={() => false}
-            step={step}
-            views={["week"]}
-            defaultView={"week"}
-            timeslots={1 * (60 / step)}
-            toolbar={true}
-            components={components as any}
-          />
-        </div>
+
         <div className="flex justify-end">
           <input type="submit" className="mr-7 mt-7 bg-blue-600 p-3 text-white" value={"create invite and continue"} />
         </div>

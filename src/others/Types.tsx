@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 import { IFNEEDBE_VOTE, NO_VOTE, YES_VOTE } from "./Constants";
 
-export type CalEvent = { start: Date; end: Date; title: string; id: number };
+export type CalEvent = { start: Date; end: Date; title: string; id: string };
 export type FsSlot = { start: Timestamp; end: Timestamp; title: string; id: number };
 export type TimesResponse = {
   id: number;

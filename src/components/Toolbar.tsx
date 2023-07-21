@@ -28,7 +28,7 @@ export default function CustomToolbar({
           type="button"
           onClick={() => onNavigate(navigate.TODAY)}
           aria-label={messages.today}
-          className="border-2 h-12 px-6"
+          className="h-12 border-2 px-6"
         >
           Today
         </button>
