@@ -2,6 +2,7 @@ import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import React from "react";
 import { db } from "./firebase";
 import { ParticipantFullInfo, TimesResponse } from "./Types";
+import moment from "moment";
 
 export async function uploadParticipantInfo(pollId: string, participant: ParticipantFullInfo) {
   console.log("hi2 from helper");
@@ -27,4 +28,14 @@ export async function getPollData(pollId: string) {
     // doc.data() will be undefined in this case
     console.log("No such document!");
   }
+}
+
+export function getDateDetails(startDate, endDate) {
+  return {
+    day: moment(startDate).format("ddd"),
+    date: startDate.getDate(),
+    month: moment(startDate).format("MMM"),
+    startTime: moment(startDate).format("h:mm a"),
+    endTime: moment(endDate).format("h:mm a"),
+  };
 }

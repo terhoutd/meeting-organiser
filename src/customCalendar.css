@@ -1,0 +1,15 @@
+.rbc-header {
+  height: 65px;
+}
+.rbc-time-header-cell {
+  flex: 1 0 auto;
+}
+.rbc-event {
+  justify-content: center;
+}
+.rbc-event-content {
+  width: auto !important;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}

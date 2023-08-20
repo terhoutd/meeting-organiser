@@ -3,16 +3,7 @@ import React from "react";
 import { IFNEEDBE_VOTE, YES_VOTE } from "../others/Constants";
 import { FsSlot, responseOption, TimesResponse } from "../others/Types";
 import TickBox from "./TickBox";
-
-function getDateDetails(startDate, endDate) {
-  return {
-    day: moment(startDate).format("ddd"),
-    date: startDate.getDate(),
-    month: moment(startDate).format("MMM"),
-    startTime: moment(startDate).format("h:mm a"),
-    endTime: moment(endDate).format("h:mm a"),
-  };
-}
+import { getDateDetails } from "../others/helpers";
 
 export default function SlotDetails({
   event,

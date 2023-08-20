@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { Calendar, momentLocalizer, stringOrDate } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -6,9 +6,9 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { v4 as uuidv4 } from "uuid";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 
-import "../../calendar.css";
+import "../../customCalendar.css";
 import { Tab } from "@headlessui/react";
-import Toolbar from "../../components/Toolbar";
+import Toolbar, { CalendarWeekHeader } from "../../components/Toolbar";
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
@@ -20,6 +20,7 @@ import { db } from "../../others/firebase";
 import { CalEvent, responseOption } from "../../others/Types";
 import { YES_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
+import { CloseSvg } from "../../assets/CloseSvg";
 
 const durations = [
   {
@@ -46,6 +47,22 @@ function CreateGroupPoll() {
   const navigate = useNavigate();
   const components = {
     toolbar: Toolbar,
+    week: { header: CalendarWeekHeader },
+    event: ({ event, title }) => {
+      console.log(event);
+      return (
+        <div
+          onClick={() => {
+            console.log("click");
+            setEvents((prev) => {
+              return prev.filter((ev) => ev.id !== event.id);
+            });
+          }}
+        >
+          <CloseSvg />
+        </div>
+      );
+    },
   };
   console.log("hi2");
   const createPollHandler = async (e: React.SyntheticEvent) => {
@@ -79,6 +96,7 @@ function CreateGroupPoll() {
     setEvents((prev) => {
       const id = uuidv4();
       const title = "";
+      // debugger;
       const newEv = { start, end, title, id };
       const newEvList = [...prev, newEv];
       console.log(newEvList);
@@ -166,7 +184,7 @@ function CreateGroupPoll() {
               ))}
             </Tab.List>
           </Tab.Group>
-          <div className="" style={{ height: "660px" }}>
+          <div className="rbc-wrapper" style={{ height: "660px" }}>
             <DnDCalendar
               localizer={localizer}
               events={events}

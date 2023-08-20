@@ -1,5 +1,6 @@
 import { Navigate as navigate } from "react-big-calendar";
 import { ToolbarArrows } from "./ToolbarArrows";
+import { getDateDetails } from "../others/helpers";
 
 type ToolBar = {
   label: string;
@@ -35,5 +36,18 @@ export default function CustomToolbar({
         <span className="rbc-toolbar-label">{label}</span>
       </div>
     </>
+  );
+}
+
+export function CalendarWeekHeader(props) {
+  console.log(props);
+  // debugger;
+  const { date } = props;
+  const dateDetails = getDateDetails(date, date); //putting same date twice to gain time and keep function as is
+  return (
+    <div className="flex h-[50px] flex-col ">
+      <span className="block text-sm uppercase">{dateDetails.day}</span>
+      <span className=" block text-[30px]">{dateDetails.date}</span>
+    </div>
   );
 }
