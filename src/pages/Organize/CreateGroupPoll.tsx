@@ -21,6 +21,7 @@ import { CalEvent, responseOption } from "../../others/Types";
 import { YES_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
 import { CloseSvg } from "../../assets/CloseSvg";
+import { m } from "framer-motion";
 
 const durations = [
   {
@@ -39,7 +40,7 @@ const durations = [
 
 function CreateGroupPoll() {
   const [events, setEvents] = useState<CalEvent[]>([]);
-  const [step, setStep] = useState(60);
+  const [duration, setDuration] = useState(60);
   const [title, setTitle] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -92,17 +93,21 @@ function CreateGroupPoll() {
       console.error("Error adding document: ", e);
     }
   };
-  const handleSelectSlot = useCallback(({ start, end }: { start: Date; end: Date }) => {
-    setEvents((prev) => {
-      const id = uuidv4();
-      const title = "";
-      // debugger;
-      const newEv = { start, end, title, id };
-      const newEvList = [...prev, newEv];
-      console.log(newEvList);
-      return newEvList;
-    });
-  }, []);
+  const handleSelectSlot = useCallback(
+    ({ start, end }: { start: Date; end: Date }) => {
+      setEvents((prev) => {
+        const id = uuidv4();
+        const title = "";
+        // debugger;
+        const newEnd = moment(start).add(duration, "minutes").toDate();
+        const newEv = { start, end: newEnd, title, id };
+        const newEvList = [...prev, newEv];
+        console.log(newEvList);
+        return newEvList;
+      });
+    },
+    [duration]
+  );
 
   const onEventDrop = useCallback(
     ({ start, end, event }: { start: stringOrDate; end: stringOrDate; event: object }) => {
@@ -117,6 +122,16 @@ function CreateGroupPoll() {
       });
     },
     []
+  );
+
+  const resizeEventsToDuration = useCallback(
+    (events: CalEvent[]) => {
+      return events.map((ev) => {
+        const newEnd = moment(ev.start).add(duration, "minutes").toDate();
+        return { ...ev, end: newEnd };
+      });
+    },
+    [duration]
   );
 
   return (
@@ -164,13 +179,14 @@ function CreateGroupPoll() {
         <div className="mt-2 w-full border border-zinc-100 bg-white  px-8 py-8 ">
           <h2 className="pb-4  text-3xl ">Add your times</h2>
           <label className="my-2 block">Duration</label>
-          <Tab.Group>
+          <Tab.Group defaultIndex={2}>
             <Tab.List className="mb-4 flex rounded-sm">
               {durations.map((d) => (
                 <Tab
                   key={d.title}
                   onClick={() => {
-                    setStep(d.duration);
+                    setDuration(d.duration);
+                    resizeEventsToDuration;
                   }}
                   className={({ selected }) =>
                     clsx(
@@ -191,10 +207,11 @@ function CreateGroupPoll() {
               onSelectSlot={handleSelectSlot}
               selectable
               onSelecting={() => false}
-              step={step}
+              step={30}
+              timeslots={2}
               views={["week"]}
               defaultView={"week"}
-              timeslots={1 * (60 / step)}
+              // timeslots={1 * (60 / step)}
               toolbar={true}
               components={components as any}
               onEventDrop={onEventDrop}

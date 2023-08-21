@@ -6,10 +6,36 @@
 }
 .rbc-event {
   justify-content: center;
+  background-color: rgb(0, 128, 43);
+}
+.rbc-event:hover {
+  background-color: rgb(206, 255, 222);
+  color: black;
+}
+.rbc-event:hover .rbc-event-content {
+  display: block;
 }
 .rbc-event-content {
   width: auto !important;
   position: absolute;
   top: 0px;
   right: 0px;
+  display: none;
+}
+.rbc-label {
+  transform: translateY(-50%);
+  display: block;
+  font-size: 14px;
+}
+.rbc-time-slot {
+  height: 25px;
+}
+.rbc-day-slot .rbc-time-slot:nth-child(2) {
+  border-top: 1px dashed #d3d3d3;
+}
+.rbc-day-slot .rbc-timeslot-group:nth-child(odd) {
+  background-color: #f8f8f9;
+}
+.rbc-time-gutter .rbc-timeslot-group {
+  border-bottom: unset;
 }
