@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { Calendar, momentLocalizer, stringOrDate } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 
 import "../../customCalendar.css";
-import { Tab } from "@headlessui/react";
+import { Dialog, Tab } from "@headlessui/react";
 import Toolbar, { CalendarWeekHeader } from "../../components/Toolbar";
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
@@ -22,6 +22,7 @@ import { YES_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
 import { CloseSvg } from "../../assets/CloseSvg";
 import { m } from "framer-motion";
+import Button from "../../components/Button";
 
 const durations = [
   {
@@ -36,36 +37,51 @@ const durations = [
     title: "60 min",
     duration: 60,
   },
+  {
+    title: "All day",
+    duration: "all day",
+  },
 ];
 
 function CreateGroupPoll() {
   const [events, setEvents] = useState<CalEvent[]>([]);
-  const [duration, setDuration] = useState(60);
+  const [duration, setDuration] = useState<number | "all day">(60);
   const [title, setTitle] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [isOpen, setIsOpen] = useState(true);
 
   const navigate = useNavigate();
   const components = {
     toolbar: Toolbar,
     week: { header: CalendarWeekHeader },
     event: ({ event, title }) => {
-      console.log(event);
+      const momentStart = moment(event.start);
+      const momentEnd = moment(event.end);
+      const showStartAm = momentStart.format("a") !== momentEnd.format("a");
+      const showStartMinutes = momentStart.format("mm") !== "00";
+      const showEndMinutes = momentEnd.format("mm") !== "00";
+      const displayStart = momentStart.format("h" + (showStartMinutes ? ":mm" : "") + (showStartAm ? " A" : ""));
+      const displayEnd = momentEnd.format("h" + (showEndMinutes ? ":mm" : "") + " A");
       return (
-        <div
-          onClick={() => {
-            console.log("click");
-            setEvents((prev) => {
-              return prev.filter((ev) => ev.id !== event.id);
-            });
-          }}
-        >
-          <CloseSvg />
+        <div>
+          {displayStart}-{displayEnd}
+          <div
+            className="cross"
+            onClick={() => {
+              console.log("click");
+              setEvents((prev) => {
+                return prev.filter((ev) => ev.id !== event.id);
+              });
+            }}
+          >
+            <CloseSvg />
+          </div>
         </div>
       );
     },
   };
-  console.log("hi2");
+
   const createPollHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -96,13 +112,24 @@ function CreateGroupPoll() {
   const handleSelectSlot = useCallback(
     ({ start, end }: { start: Date; end: Date }) => {
       setEvents((prev) => {
+        //check if event with same start and end exists already)
+        let title = "";
+
+        const startMoment = moment(start);
+        const endMoment = moment(end);
+        let newEnd: Date;
+        const comp = startMoment.clone().add(24, "hours");
+        if (endMoment.isSame(comp)) {
+          title = "all day";
+          newEnd = end;
+        } else {
+          newEnd = startMoment.add(duration, "minutes").toDate();
+          title = "test";
+        }
+        if (prev.find((ev) => moment(ev.start).isSame(start) && moment(ev.end).isSame(newEnd))) return prev;
         const id = uuidv4();
-        const title = "";
-        // debugger;
-        const newEnd = moment(start).add(duration, "minutes").toDate();
         const newEv = { start, end: newEnd, title, id };
         const newEvList = [...prev, newEv];
-        console.log(newEvList);
         return newEvList;
       });
     },
@@ -117,22 +144,20 @@ function CreateGroupPoll() {
         if (!foundEv) return prev;
         foundEv.start = start;
         foundEv.end = end;
-        console.log(prev);
         return prev;
       });
     },
     []
   );
 
-  const resizeEventsToDuration = useCallback(
-    (events: CalEvent[]) => {
-      return events.map((ev) => {
+  useEffect(() => {
+    setEvents(
+      events.map((ev) => {
         const newEnd = moment(ev.start).add(duration, "minutes").toDate();
         return { ...ev, end: newEnd };
-      });
-    },
-    [duration]
-  );
+      })
+    );
+  }, [duration]);
 
   return (
     <div className="">
@@ -185,8 +210,8 @@ function CreateGroupPoll() {
                 <Tab
                   key={d.title}
                   onClick={() => {
-                    setDuration(d.duration);
-                    resizeEventsToDuration;
+                    if (d.duration === "all day") setIsOpen(true);
+                    else setDuration(d.duration);
                   }}
                   className={({ selected }) =>
                     clsx(
@@ -200,11 +225,35 @@ function CreateGroupPoll() {
               ))}
             </Tab.List>
           </Tab.Group>
+          <Dialog open={isOpen} onClose={() => {}}>
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+              <Dialog.Panel className="w-full max-w-xl rounded bg-white p-12">
+                <Dialog.Title className={"mb-5 text-3xl"}>Change the duration of the meeting</Dialog.Title>
+                <Dialog.Description className={"text-md text-zinc-600"}>
+                  Both all-day and time-specific options are not supported in the same meeting, please choose one type
+                  of option:
+                </Dialog.Description>
+                <div className="mt-16 flex justify-center gap-4">
+                  <Button variant="link" onClick={() => setIsOpen(false)} className="h-16 w-56 p-6">
+                    Switch to all-day options
+                  </Button>
+                  <Button variant="primary" onClick={() => setIsOpen(false)} className="h-16 w-56">
+                    Keep time-specific options
+                  </Button>
+                </div>
+              </Dialog.Panel>
+            </div>
+          </Dialog>
           <div className="rbc-wrapper" style={{ height: "660px" }}>
             <DnDCalendar
               localizer={localizer}
               events={events}
-              onSelectSlot={handleSelectSlot}
+              onSelectSlot={(p) => {
+                console.log(p);
+                handleSelectSlot(p);
+              }}
               selectable
               onSelecting={() => false}
               step={30}
@@ -216,6 +265,7 @@ function CreateGroupPoll() {
               components={components as any}
               onEventDrop={onEventDrop}
               resizable={false}
+              showMultiDayTimes={true}
             />
           </div>
         </div>

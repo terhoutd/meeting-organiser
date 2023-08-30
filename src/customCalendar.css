@@ -7,21 +7,38 @@
 .rbc-event {
   justify-content: center;
   background-color: rgb(0, 128, 43);
+  padding: 0;
 }
 .rbc-event:hover {
   background-color: rgb(206, 255, 222);
   color: black;
 }
-.rbc-event:hover .rbc-event-content {
+.rbc-event:hover .rbc-event-content .cross {
   display: block;
 }
-.rbc-event-content {
+.rbc-event-content .cross {
   width: auto !important;
   position: absolute;
   top: 0px;
   right: 0px;
   display: none;
 }
+.rbc-event-label {
+  display: none;
+}
+.rbc-event-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+.rbc-event-content > div {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .rbc-label {
   transform: translateY(-50%);
   display: block;

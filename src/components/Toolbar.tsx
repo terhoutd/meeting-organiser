@@ -40,7 +40,7 @@ export default function CustomToolbar({
 }
 
 export function CalendarWeekHeader(props) {
-  console.log(props);
+  // console.log(props);
   // debugger;
   const { date } = props;
   const dateDetails = getDateDetails(date, date); //putting same date twice to gain time and keep function as is
