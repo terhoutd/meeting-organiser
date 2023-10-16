@@ -10,18 +10,20 @@ export default function ResponsesTable({
   displayedSlotsIds,
   variant = "vote",
   currentParticipantPosition = "exclude",
+  countIcon = "tick",
 }: {
   pollData: PollData;
   displayedSlotsIds: any[];
   variant?: string;
   currentParticipantPosition?: "exclude" | "top";
+  countIcon?: "tick" | "people";
 }) {
   const { participant } = useVote();
 
   console.log("displayedSlotsIds", displayedSlotsIds);
   let sortedIncludedParticipants = [
     ...pollData.participants.filter((p) => {
-      if (currentParticipantPosition == "exclude") return p.email !== participant.email;
+      if (participant && currentParticipantPosition == "exclude") return p.email !== participant.email;
       return true;
     }),
   ];
@@ -59,7 +61,7 @@ export default function ResponsesTable({
         className="hidden lg:grid"
       >
         {displayedSlots.map((s) => {
-          return <SlotYesCount key={s.id} slotId={s.id} participants={sortedIncludedParticipants} />;
+          return <SlotYesCount key={s.id} slotId={s.id} participants={sortedIncludedParticipants} countIcon />;
         })}
       </div>
       <div
@@ -67,7 +69,7 @@ export default function ResponsesTable({
           gridArea: "participants",
           gridTemplateColumns: `228px 470px`,
           gridTemplateRows: `repeat(${sortedIncludedParticipants.length}, 48px)`,
-          height: "216px",
+          // height: "216px",
           overflowY: "auto",
           gap: " 8px 0",
           // placeItems: "center",

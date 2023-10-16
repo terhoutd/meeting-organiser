@@ -28,7 +28,7 @@ export default function PaginationRow({
     <div className={`hidden px-4 lg:flex lg:p-0 ${showLegend ? "justify-between" : "justify-end"} relative`}>
       {showLegend && <ResponseLegend />}
 
-      <div className={`${className ?? ""} flex items-center justify-end gap-2 pr-6`}>
+      <div className={`${className ?? ""} flex items-center justify-end gap-2`}>
         <span>{options} options</span>
         <PaginationButton onClick={left.onClick} direction={"left"} disabled={left.disabled} />
         <PaginationButton onClick={right.onClick} direction={"right"} disabled={right.disabled} />

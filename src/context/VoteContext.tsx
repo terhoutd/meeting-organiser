@@ -31,31 +31,31 @@ export function VoteProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  //get the data synced with current pollid
   useEffect(() => {
     async function fetchData() {
+      //generates a doc reference then uses it to obtain the actual doc
       const pollDocRef = doc(db, "group polls", pollId);
       const pollDocSnap = await getDoc(pollDocRef);
-
       if (!pollDocSnap.exists()) {
         console.log("No such document!");
         return;
       }
-      console.log("Document data:", pollDocSnap.data());
       const pollData = pollDocSnap.data() as PollData;
+      console.log("Document data:", pollData);
+      //get all the docs in the participants collection and their data to our object
       const votesDocsSnaps = await getDocs(collection(pollDocRef, "participants"));
       console.log(votesDocsSnaps);
       pollData.participants = votesDocsSnaps.docs.map((v) => {
         return v.data() as ParticipantFullInfo;
       });
       setPollData(pollData);
-      //if (callback) callback(pollData);
     }
     if (!pollId) return;
     fetchData();
   }, [pollId]);
 
   const value = {
-    test: "hello1",
     pollData,
     setPollData,
     setPollId,

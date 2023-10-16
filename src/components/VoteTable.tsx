@@ -8,7 +8,7 @@ import ResponsesTable from "./ResponsesTable";
 import SlotDetails from "./SlotDetails";
 import SlotVote from "./SlotVote";
 
-export function VoteTable({ readOnly = false }: { readOnly?: boolean }) {
+export function VoteTable({ readOnly = false, countIcon }: { readOnly?: boolean; countIcon?: "people" | "tick" }) {
   const { test, pollData, setPollId, userResponses, setUserResponses, participant, isDesktop } = useVote();
   console.log("isDesktop", isDesktop);
   console.log(pollData);
@@ -18,14 +18,14 @@ export function VoteTable({ readOnly = false }: { readOnly?: boolean }) {
     <div
       style={{
         gridTemplateColumns: `228px 490px`,
-        gridTemplateRows: `auto auto 200px`,
+        gridTemplateRows: `auto auto auto`,
         gridTemplateAreas: `
 'top-left${" slots".repeat(slotsShown.length)} '
 '.${" yes-count".repeat(slotsShown.length)}'
 '${" participants".repeat(slotsShown.length + 1)}'
 `,
       }}
-      className="flex flex-col lg:grid"
+      className="flex flex-col lg:grid "
     >
       <div className="hidden h-full w-full flex-col justify-end lg:flex " style={{ gridArea: "top-left" }}>
         {readOnly ? (
@@ -49,23 +49,24 @@ export function VoteTable({ readOnly = false }: { readOnly?: boolean }) {
             .map((event) => {
               return (
                 <MotionDiv key={event.id}>
-                  {readOnly ? (
+                  {/* {readOnly ? (
                     <SlotDetails key={event.id.toString()} event={event} />
-                  ) : (
-                    <SlotVote
-                      key={event.id.toString()}
-                      slot={event}
-                      vote={userResponses.find((v) => v.id == event.id)?.response as string}
-                      setVote={(vote) => {
-                        setUserResponses(
-                          userResponses.map((v) => {
-                            if (v.id != event.id) return v;
-                            return { id: v.id, response: vote };
-                          })
-                        );
-                      }}
-                    />
-                  )}
+                  ) : ( */}
+                  <SlotVote
+                    variant="read"
+                    key={event.id.toString()}
+                    slot={event}
+                    vote={userResponses.find((v) => v.id == event.id)?.response as string}
+                    setVote={(vote) => {
+                      setUserResponses(
+                        userResponses.map((v) => {
+                          if (v.id != event.id) return v;
+                          return { id: v.id, response: vote };
+                        })
+                      );
+                    }}
+                  />
+                  {/* )} */}
                 </MotionDiv>
               );
             })}
@@ -76,6 +77,7 @@ export function VoteTable({ readOnly = false }: { readOnly?: boolean }) {
         pollData={pollData}
         variant={readOnly ? "overview" : "vote"}
         currentParticipantPosition={readOnly ? "top" : "exclude"}
+        countIcon={countIcon}
       />
     </div>
   );

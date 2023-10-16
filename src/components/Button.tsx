@@ -12,8 +12,7 @@ export default function Button({ variant, onClick, disabled, children, className
   if (variant == "secondary") {
     variantClassName =
       "h-11 border border-slate-300 bg-white px-4 font-medium text-gray-600 hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-500";
-  }
-  if (variant == "link") {
+  } else if (variant == "link") {
     variantClassName = "h-11 px-4 font-medium text-blue-600 hover:underline disabled:text-gray-500";
   } else {
     variantClassName =

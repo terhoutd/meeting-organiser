@@ -6,11 +6,8 @@ import MeetingOverview from "../../components/MeetingOverview";
 import { MotionDiv } from "../../components/MotionDiv";
 import PaginationWrapper, { PaginationContext } from "../../components/PaginationWrapper";
 import ParticipationHeaders from "../../components/ParticipationHeader";
-import ResponseLegend from "../../components/ResponseLegend";
-import SlotDetails from "../../components/SlotDetails";
-import SlotVote from "../../components/SlotVote";
+
 import { useVote } from "../../context/voteContext";
-import usePollData from "../../hooks/usePollData";
 import { NO_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
 import { FsSlot, PollData } from "../../others/Types";
@@ -74,7 +71,7 @@ export default function ConfirmVoteGroupPoll() {
   const maxSlotsPerPage = 7;
 
   return (
-    <div className="flex h-[700px] flex-col lg:flex-row">
+    <div className="flex h-[700px] flex-col bg-white lg:flex-row">
       <div className={" w-full lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
         <MeetingOverview />
       </div>
@@ -96,7 +93,7 @@ export default function ConfirmVoteGroupPoll() {
           </PaginationWrapper>
         </div>
 
-        <Link className="mt-2 font-medium	text-blue-600" to="/meeting/participate/id/${pollId}/vote/">
+        <Link className="mt-2 font-medium	text-blue-600" to={`/meeting/participate/id/${pollId}/vote/`}>
           Change
         </Link>
         <Formik

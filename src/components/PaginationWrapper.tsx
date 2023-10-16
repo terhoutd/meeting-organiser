@@ -9,8 +9,8 @@ export default function PaginationWrapper({ children, maxSlotsPerPage, slotList,
   const { pollData, isDesktop } = useVote();
   if (!pollData) return null;
   const { participants }: { slots: FsSlot[]; participants: ParticipantFullInfo[] } = pollData;
-  const isOverview = variant == "overview";
-  console.log("isOverview in PaginationWrapper", isOverview);
+  // const isOverview = variant == "overview";
+  // console.log("isOverview in PaginationWrapper", isOverview);
   console.log("isDesktop", isDesktop);
   console.log("slotList", slotList);
   const [rightPagination, setRightPagination] = useState(true);
@@ -49,7 +49,6 @@ export default function PaginationWrapper({ children, maxSlotsPerPage, slotList,
     rightPagination,
     setRightPagination,
     slotsShown,
-    isOverview,
   };
   console.log("contextValue", contextValue);
   return (

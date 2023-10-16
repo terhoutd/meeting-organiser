@@ -1,44 +1,105 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../others/firebase";
-import SlotDetails from "../../components/SlotDetails";
-import { getPollData } from "../../others/helpers";
-import usePollData from "../../hooks/usePollData";
-import TickBox from "../../components/TickBox";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+
+import { NO_VOTE } from "../../others/Constants";
+
+import Button from "../../components/Button";
+import { useVote } from "../../context/voteContext";
+import MeetingOverview from "../../components/MeetingOverview";
+import ResponseLegend from "../../components/ResponseLegend";
+import ParticipationHeaders from "../../components/ParticipationHeader";
+import PaginationWrapper from "../../components/PaginationWrapper";
+import { VoteTable } from "../../components/VoteTable";
 
 export default function ManageGroupPoll() {
   let params = useParams();
-  const pollId = params.groupPollId;
-  if (!pollId) return;
+  const { test, pollData, setPollId, userResponses, setUserResponses, setParticipant } = useVote();
+  console.log(test);
+  console.log("VoteGroupPoll rendering");
+  console.log("pollData", pollData);
 
-  const pollData = usePollData(pollId);
-  console.log(pollData);
+  console.log("responses", userResponses);
+  const navigate = useNavigate();
+  const pollId = params.groupPollId || "";
+  useEffect(() => {
+    setPollId(pollId);
+    // setParticipant()
+  }, []);
 
-  return pollData?.slots ? (
-    <div>
-      ManageGroupPoll {pollId}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `226px repeat(${pollData.slots.length}, 90px [col-start])`,
-          gridTemplateRows: "1fr 48px",
-          placeItems: "center",
-          gap: "10px 10px",
-        }}
-      >
-        <div></div>
-        {pollData.slots.map((event) => {
-          return <SlotDetails key={event.id} event={event} />;
-        })}
-        <div className="justify-self-start">eddy</div>
+  const pollDataAvailable = !!pollData;
+  const urlConfirmPage = `/meeting/participate/id/${pollId}/vote/confirm`;
+  useEffect(() => {
+    console.log("usef1", pollDataAvailable, userResponses, pollData);
+    if (userResponses || !pollDataAvailable) return;
+    console.log("in", declineAllSlots(pollData));
+    declineAllSlots(pollData);
+    setParticipant(pollData.participants.find((p) => p.isOrganiser));
+  }, [pollDataAvailable]);
 
-        <TickBox type="yes" variant="table" />
-        <TickBox type="yes" variant="table" />
-        <TickBox type="no" variant="table" />
+  if (!pollData || !userResponses) return <span>no data yet</span>;
+
+  const isAllDeclined = userResponses.every((r) => {
+    return r.response === NO_VOTE;
+  });
+
+  const maxSlotsPerPage = 5;
+
+  return (
+    <div className="flex flex-col lg:flex-row">
+      <div className=" relative w-full sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
+        <div className="flex  flex-col	 justify-between lg:mx-8 lg:mt-8">
+          <div className="mx-4 mb-6 lg:mx-0">
+            <ParticipationHeaders mainText={pollData.title} />
+          </div>
+          <div className="mx-4 mb-4  flex justify-between lg:mx-0">
+            <ul>
+              <li>You are the organizer</li>
+              <li>put time here </li>
+              <li>TIMEZONE HERE</li>
+            </ul>
+            <div className=" flex gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  navigate("/meeting/organize/id/" + pollId + "/edit");
+                }}
+              >
+                Edit
+              </Button>
+              <Button>Copy link</Button>
+            </div>
+          </div>
+          <div className=" mx-4  justify-between lg:mx-0 lg:flex">
+            <p className="mb-6 font-semibold">Availabilities</p>
+            <ResponseLegend column={false} extended={false} />
+          </div>
+
+          <div className=" mb-8 ">
+            <PaginationWrapper
+              slotList={pollData.slots}
+              maxSlotsPerPage={maxSlotsPerPage}
+              showLegend={false}
+              showTip={false}
+            >
+              <VoteTable readOnly={true} countIcon="people" />
+            </PaginationWrapper>
+          </div>
+        </div>
       </div>
     </div>
-  ) : (
-    <span>"no data yet"</span>
   );
+  function declineAllSlots(pollData) {
+    setUserResponses(
+      pollData.slots.map((ev) => {
+        return { id: ev.id, response: NO_VOTE };
+      })
+    );
+  }
+  function declineHandler() {
+    declineAllSlots(pollData);
+    navigate(urlConfirmPage);
+  }
+  function continueHandler(e) {
+    navigate(urlConfirmPage);
+  }
 }

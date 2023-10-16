@@ -5,16 +5,9 @@ import { NO_VOTE } from "../../others/Constants";
 
 import Button from "../../components/Button";
 import { useVote } from "../../context/voteContext";
-import MeetingOverview from "../../components/MeetingOverview";
-import ResponseLegend from "../../components/ResponseLegend";
-import ParticipationHeaders from "../../components/ParticipationHeader";
+
 import PaginationWrapper, { PaginationContext } from "../../components/PaginationWrapper";
-import { AnimatePresence } from "framer-motion";
-import { MotionDiv } from "../../components/MotionDiv";
-import ParticipantNameLabel from "../../components/ParticipantNameLabel";
-import ResponsesTable from "../../components/ResponsesTable";
-import SlotDetails from "../../components/SlotDetails";
-import SlotVote from "../../components/SlotVote";
+
 import { VoteTable } from "../../components/VoteTable";
 import EventMetaData from "../../components/EventMetaData";
 import CalendarAcceptIcon from "../../assets/CalendarSvg";
@@ -29,7 +22,7 @@ export default function OverviewVoteGroupPoll() {
   console.log("responses", userResponses);
   const navigate = useNavigate();
   const pollId = params.groupPollId || "";
-  useEffect(() => setPollId(pollId));
+  useEffect(() => setPollId(pollId), []);
 
   const pollDataAvailable = !!pollData;
   const urlConfirmPage = `/meeting/participate/id/${pollId}/vote/confirm`;
@@ -47,10 +40,12 @@ export default function OverviewVoteGroupPoll() {
   });
 
   const maxSlotsPerPage = 8;
-  const changeResponseHandler = () => {};
+  const changeResponseHandler = () => {
+    navigate(`/meeting/participate/id/${pollId}/vote`);
+  };
   return (
-    <div className="flex h-full flex-col bg-gray-50">
-      <div className=" relative mb-5 w-full border border-slate-300 p-8 ">
+    <div className="flex h-full flex-col ">
+      <div className=" relative mb-5 w-full border border-slate-300 bg-white p-8">
         <div className="align-center flex">
           <div className="mr-[10px]">
             <CalendarAcceptIcon />
@@ -64,7 +59,7 @@ export default function OverviewVoteGroupPoll() {
           Change your response
         </Button>
       </div>
-      <div className=" relative w-full sm:px-0 lg:border lg:border-slate-300">
+      <div className=" relative w-full bg-white sm:px-0 lg:border lg:border-slate-300">
         <div className="flex  flex-col	 justify-between lg:mt-8">
           <div className="lg:px-8">
             <EventMetaData excludeParticipantCount={true} />
@@ -72,14 +67,14 @@ export default function OverviewVoteGroupPoll() {
             <p className="mb-2 font-semibold">Availabilities</p>
           </div>
 
-          <div className="pl-8 ">
+          <div className="lg:pl-8 ">
             <PaginationWrapper
               slotList={pollData.slots}
               maxSlotsPerPage={maxSlotsPerPage}
               showLegend={true}
               showTip={false}
             >
-              <VoteTable readOnly={true} />
+              <VoteTable readOnly={true} countIcon="people" />
             </PaginationWrapper>
           </div>
         </div>

@@ -21,12 +21,13 @@ export default function VoteGroupPoll() {
   console.log("responses", userResponses);
   const navigate = useNavigate();
   const pollId = params.groupPollId || "";
-  useEffect(() => setPollId(pollId));
+  useEffect(() => setPollId(pollId), []);
 
   const pollDataAvailable = !!pollData;
   const urlConfirmPage = `/meeting/participate/id/${pollId}/vote/confirm`;
   useEffect(() => {
     console.log("usef1", pollDataAvailable, userResponses, pollData);
+    //by default, all slots are declined, unless we edit the votes or the pollData is not present yet
     if (userResponses || !pollDataAvailable) return;
     console.log("in", declineAllSlots(pollData));
     declineAllSlots(pollData);
@@ -41,7 +42,7 @@ export default function VoteGroupPoll() {
   const maxSlotsPerPage = 5;
 
   return (
-    <div className="flex  h-[700px] flex-col lg:flex-row">
+    <div className="flex  h-[700px] flex-col bg-white lg:flex-row">
       <div className={" w-full border-b lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
         <MeetingOverview />
       </div>
