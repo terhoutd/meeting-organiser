@@ -58,10 +58,12 @@ export default function ResponsesTable({
           // gap: " 10px",
           placeItems: "center",
         }}
-        className="hidden lg:grid"
+        className="hidden lg:grid  lg:overflow-y-auto"
       >
         {displayedSlots.map((s) => {
-          return <SlotYesCount key={s.id} slotId={s.id} participants={sortedIncludedParticipants} countIcon />;
+          return (
+            <SlotYesCount key={s.id} slotId={s.id} participants={sortedIncludedParticipants} countIcon={countIcon} />
+          );
         })}
       </div>
       <div
@@ -75,7 +77,7 @@ export default function ResponsesTable({
           // placeItems: "center",
           // paddingRight: "40px",
         }}
-        className="hidden lg:grid"
+        className="hidden lg:grid lg:h-[205px]"
       >
         {sortedIncludedParticipants.map((participant) => (
           <React.Fragment key={participant.email}>

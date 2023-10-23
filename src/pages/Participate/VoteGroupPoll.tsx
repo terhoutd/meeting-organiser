@@ -47,7 +47,7 @@ export default function VoteGroupPoll() {
         <MeetingOverview />
       </div>
       <div className=" relative w-full sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
-        <div className="flex  flex-col	 justify-between lg:mx-8 lg:mt-8">
+        <div className="flex  flex-col	 justify-between lg:px-8 lg:pt-8">
           <div className="mx-4">
             <ParticipationHeaders
               mainText="Select your preferred times"

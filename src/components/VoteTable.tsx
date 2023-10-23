@@ -25,7 +25,7 @@ export function VoteTable({ readOnly = false, countIcon }: { readOnly?: boolean;
 '${" participants".repeat(slotsShown.length + 1)}'
 `,
       }}
-      className="flex flex-col lg:grid "
+      className={`flex ${!readOnly ? "" : "mb-5 "} flex-col lg:grid`}
     >
       <div className="hidden h-full w-full flex-col justify-end lg:flex " style={{ gridArea: "top-left" }}>
         {readOnly ? (
@@ -53,7 +53,7 @@ export function VoteTable({ readOnly = false, countIcon }: { readOnly?: boolean;
                     <SlotDetails key={event.id.toString()} event={event} />
                   ) : ( */}
                   <SlotVote
-                    variant="read"
+                    variant={readOnly ? "read" : "vote"}
                     key={event.id.toString()}
                     slot={event}
                     vote={userResponses.find((v) => v.id == event.id)?.response as string}

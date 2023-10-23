@@ -42,7 +42,7 @@
 .rbc-time-slot .rbc-label {
   transform: translateY(-50%);
   display: block;
-  font-size: 14px;
+  font-size: 12px;
 }
 .rbc-time-slot {
   height: 25px;
@@ -77,4 +77,8 @@
 }
 .rbc-time-content {
   border-right: 1px solid #d3d3d3;
+}
+
+.rbc-time-gutter .rbc-timeslot-group:first-child .rbc-label {
+  transform: unset;
 }

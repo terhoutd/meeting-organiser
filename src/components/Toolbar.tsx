@@ -20,7 +20,7 @@ export default function CustomToolbar({
   onNavigate,
 }: ToolBar) {
   return (
-    <>
+    <div className="mb-8">
       <div className="space-x-2">
         <ToolbarArrows onClickHandler={() => onNavigate(navigate.PREVIOUS)} ariaLabel={messages.previous} />
         <ToolbarArrows onClickHandler={() => onNavigate(navigate.NEXT)} ariaLabel={messages.next} rotation={"right"} />
@@ -35,7 +35,7 @@ export default function CustomToolbar({
         </button>
         <span className="rbc-toolbar-label">{label}</span>
       </div>
-    </>
+    </div>
   );
 }
 

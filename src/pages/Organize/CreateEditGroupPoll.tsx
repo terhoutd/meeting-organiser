@@ -116,13 +116,6 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
         organiserName: name,
         //participants: [defaultVotes],
       });
-      console.log("Document written with ID: ", docRef.id);
-      uploadParticipantInfo(pollId, {
-        isOrganiser: true,
-        name: name,
-        email: email,
-        responses: defaultResponses,
-      });
 
       navigate("/meeting/organize/id/" + pollId);
     } catch (e) {
@@ -236,7 +229,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
     <div className="">
       <form onSubmit={isEdit ? updatePollHandler : createPollHandler}>
         <div className="w-full border border-zinc-100 bg-white p-4 lg:p-8">
-          <h1 className="ml-[-32px] border-b pb-8 text-4xl ">Create group poll</h1>
+          <h1 className="ml-[-32px] border-b pb-8 pl-8 text-4xl ">Create group poll</h1>
           <div
             className=" my-8
            flex flex-col"
@@ -274,7 +267,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
             />
           </div>
         </div>
-        <div className="mt-2 w-full border border-zinc-100 bg-white  p-4 lg:p-8 ">
+        <div className="mt-2 w-full border border-zinc-100 bg-white p-4 lg:mb-[76px] lg:p-8 ">
           <h2 className="pb-4  text-3xl ">Add your times</h2>
           <label className="my-2 block">Duration</label>
           <Tab.Group
@@ -318,7 +311,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
             clickedDurationTabIndexRef={clickedDurationTabIndexRef}
             setSelectedIndex={setSelectedIndex}
           />
-          <div className="rbc-wrapper" style={{ height: "660px" }}>
+          <div className="rbc-wrapper h-[660px] lg:mt-8">
             <DnDCalendar
               slotPropGetter={slotPropGetter}
               localizer={localizer}
@@ -343,24 +336,26 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
           </div>
         </div>
 
-        <div className="flex justify-end">
-          {isEdit ? (
+        <div className="fixed right-0 bottom-0 flex  w-full justify-center border-t border-zinc-400 bg-white">
+          <div className="flex w-full max-w-[1000px] justify-end  px-8 ">
+            {isEdit ? (
+              <input
+                type="button"
+                onClick={() => {
+                  navigate("/meeting/organize/id/" + pollId);
+                }}
+                className="mr-7 mt-7 bg-blue-600 p-3 text-white"
+                value={"Cancel"}
+              />
+            ) : (
+              ""
+            )}
             <input
-              type="button"
-              onClick={() => {
-                navigate("/meeting/organize/id/" + pollId);
-              }}
-              className="mr-7 mt-7 bg-blue-600 p-3 text-white"
-              value={"Cancel"}
+              type="submit"
+              className=" my-4 bg-blue-600 p-3 text-white"
+              value={isEdit ? "Save" : "Create invite and continue"}
             />
-          ) : (
-            ""
-          )}
-          <input
-            type="submit"
-            className="mr-7 mt-7 bg-blue-600 p-3 text-white"
-            value={isEdit ? "Save" : "Create invite and continue"}
-          />
+          </div>
         </div>
       </form>
     </div>

@@ -25,7 +25,7 @@ export default function PaginationRow({
   showTip?: boolean;
 }) {
   return (
-    <div className={`hidden px-4 lg:flex lg:p-0 ${showLegend ? "justify-between" : "justify-end"} relative`}>
+    <div className={`hidden px-4 lg:flex lg:p-0 lg:pr-8 ${showLegend ? "justify-between" : "justify-end"} relative`}>
       {showLegend && <ResponseLegend />}
 
       <div className={`${className ?? ""} flex items-center justify-end gap-2`}>

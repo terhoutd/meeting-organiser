@@ -31,13 +31,13 @@ export default function SlotDetails({
           </div>
           <div className="flex shrink-0 flex-col justify-center">
             <div className="mx-auto font-medium uppercase">{dateDetails.startTime}</div>
-            <div className=" mx-auto font-medium uppercase">{dateDetails.endTime}</div>fdfs
+            <div className=" mx-auto font-medium uppercase">{dateDetails.endTime}</div>
           </div>
         </div>
       </div>
       {mobileSimple && (
         <div className="font-medium lg:hidden">
-          {dateDetails.day} {dateDetails.date} {dateDetails.month} {dateDetails.startTime} - {dateDetails.endTime} bla
+          {dateDetails.day} {dateDetails.date} {dateDetails.month} {dateDetails.startTime} - {dateDetails.endTime}
         </div>
       )}
     </div>
