@@ -92,7 +92,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
           <div
             className="cross"
             onClick={() => {
-              console.log("click");
+              console.log("click on cross");
               setEvents((prev) => {
                 return prev.filter((ev) => ev.id !== event.id);
               });
@@ -159,6 +159,9 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
   }
   const handleSelectSlot = useCallback(
     (event: ClickEvent) => {
+      // console.log("handleSelectSlot");
+      //discard if start date is in the past
+      if (isDateInThePast(event.start)) return;
       const isAllDayEventClick = getIsAllDayEventClick(event);
       const isDurationAllDay = duration === "all day";
       if (isAllDayEventClick !== isDurationAllDay) {
@@ -227,9 +230,9 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
 
   return (
     <div className="">
-      <form onSubmit={isEdit ? updatePollHandler : createPollHandler}>
+      <form className="overflow-x-hidden" onSubmit={isEdit ? updatePollHandler : createPollHandler}>
         <div className="w-full border border-zinc-100 bg-white p-4 lg:p-8">
-          <h1 className="ml-[-32px] border-b pb-8 pl-8 text-4xl ">Create group poll</h1>
+          <h1 className="ml-[-22px] mr-[-22px] border-b px-4 pb-8 text-4xl">Create group poll</h1>
           <div
             className=" my-8
            flex flex-col"
@@ -267,7 +270,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
             />
           </div>
         </div>
-        <div className="mt-2 w-full border border-zinc-100 bg-white p-4 lg:mb-[76px] lg:p-8 ">
+        <div className="mt-2 mb-[92px] w-full border border-zinc-100 bg-white p-4 lg:p-8 ">
           <h2 className="pb-4  text-3xl ">Add your times</h2>
           <label className="my-2 block">Duration</label>
           <Tab.Group
@@ -311,7 +314,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
             clickedDurationTabIndexRef={clickedDurationTabIndexRef}
             setSelectedIndex={setSelectedIndex}
           />
-          <div className="rbc-wrapper h-[660px] lg:mt-8">
+          <div className="rbc-wrapper h-[660px] lg:mt-8 ">
             <DnDCalendar
               slotPropGetter={slotPropGetter}
               localizer={localizer}
@@ -383,14 +386,14 @@ function SwitchDurationDialog({
     <Dialog open={isOpen} onClose={() => {}}>
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
-      <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-xl rounded bg-white p-12">
+      <div className="fixed inset-0 z-10 flex items-center justify-center p-6">
+        <Dialog.Panel className="w-full max-w-xl rounded bg-white p-4 lg:p-8">
           <Dialog.Title className={"mb-5 text-3xl"}>Change the duration of the meeting</Dialog.Title>
           <Dialog.Description className={"text-md text-zinc-600"}>
             Both all-day and time-specific options are not supported in the same meeting, please choose one type of
             option:
           </Dialog.Description>
-          <div className="mt-16 flex justify-center gap-4">
+          <div className="mt-4 flex flex-col justify-center gap-4 lg:mt-16 lg:flex-row">
             <Button
               variant="link"
               onClick={() => {
@@ -399,7 +402,7 @@ function SwitchDurationDialog({
                 setDuration(durationFromClickedTab);
                 setSelectedIndex(clickedDurationTabIndexRef.current);
               }}
-              className="h-16 w-56 p-6"
+              className="order-1 lg:order-2"
             >
               {allDayWasClicked ? "Switch to all-day options" : "Switch to time-specific options"}
             </Button>
@@ -408,7 +411,7 @@ function SwitchDurationDialog({
               onClick={() => {
                 setIsOpen(false);
               }}
-              className="h-16 w-56"
+              className="order-2 lg:order-1"
             >
               {allDayWasClicked ? "Keep time-specific options" : "Keep all-day options"}
             </Button>
@@ -420,9 +423,9 @@ function SwitchDurationDialog({
 }
 
 function slotPropGetter(date: Date): { className?: string; style?: object } {
+  return isDateInThePast(date) ? { className: "rbc-time-slot-expired" } : {};
+}
+function isDateInThePast(date: Date) {
   const cutOffDate = new Date();
-  if (moment(cutOffDate).isAfter(date)) {
-    return { className: "rbc-time-slot-expired" };
-  }
-  return {};
+  return moment(cutOffDate).isAfter(date);
 }
