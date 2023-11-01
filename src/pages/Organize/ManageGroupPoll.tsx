@@ -13,7 +13,7 @@ import { VoteTable } from "../../components/VoteTable";
 
 export default function ManageGroupPoll() {
   let params = useParams();
-  const { test, pollData, setPollId, userResponses, setUserResponses, setParticipant } = useVote();
+  const { test, pollData, setPollId, userResponses, setUserResponses, setParticipant, setPageType } = useVote();
   console.log(test);
   console.log("VoteGroupPoll rendering");
   console.log("pollData", pollData);
@@ -24,16 +24,19 @@ export default function ManageGroupPoll() {
   useEffect(() => {
     setPollId(pollId);
     // setParticipant()
+    setPageType("organiser overview");
   }, []);
 
   const pollDataAvailable = !!pollData;
   const urlConfirmPage = `/meeting/participate/id/${pollId}/vote/confirm`;
   useEffect(() => {
     console.log("usef1", pollDataAvailable, userResponses, pollData);
-    if (userResponses || !pollDataAvailable) return;
-    console.log("in", declineAllSlots(pollData));
-    declineAllSlots(pollData);
-    setParticipant(pollData.participants.find((p) => p.isOrganiser));
+    if (!pollDataAvailable) return;
+    // // console.log("in", declineAllSlots(pollData));
+    // declineAllSlots(pollData);
+    const curParticipant = pollData.participants.find((p) => p.isOrganiser);
+    setParticipant(curParticipant);
+    setUserResponses(curParticipant.responses);
   }, [pollDataAvailable]);
 
   if (!pollData || !userResponses) return <span>no data yet</span>;
@@ -45,17 +48,15 @@ export default function ManageGroupPoll() {
   const maxSlotsPerPage = 5;
 
   return (
-    <div className="flex flex-col lg:flex-row">
-      <div className=" relative w-full sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
-        <div className="flex  flex-col	 justify-between lg:mx-8 lg:mt-8">
+    <div className="flex flex-col bg-white lg:flex-row">
+      <div className=" relative w-full sm:px-0  lg:border lg:border-slate-300">
+        <div className="flex  flex-col justify-between lg:mx-8 lg:mt-8 ">
           <div className="mx-4 mb-6 lg:mx-0">
             <ParticipationHeaders mainText={pollData.title} />
           </div>
           <div className="mx-4 mb-4  flex justify-between lg:mx-0">
             <ul>
               <li>You are the organizer</li>
-              <li>put time here </li>
-              <li>TIMEZONE HERE</li>
             </ul>
             <div className=" flex gap-2">
               <Button
@@ -66,7 +67,15 @@ export default function ManageGroupPoll() {
               >
                 Edit
               </Button>
-              <Button>Copy link</Button>
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${location.protocol}//${location.host}/meeting/participate/id/${pollId}/vote`
+                  );
+                }}
+              >
+                Copy link
+              </Button>
             </div>
           </div>
           <div className=" mx-4  justify-between lg:mx-0 lg:flex">
@@ -81,7 +90,7 @@ export default function ManageGroupPoll() {
               showLegend={false}
               showTip={false}
             >
-              <VoteTable readOnly={true} countIcon="people" />
+              <VoteTable variant="organiser overview" />
             </PaginationWrapper>
           </div>
         </div>

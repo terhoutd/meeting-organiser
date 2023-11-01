@@ -13,7 +13,7 @@ import { VoteTable } from "../../components/VoteTable";
 
 export default function VoteGroupPoll() {
   let params = useParams();
-  const { test, pollData, setPollId, userResponses, setUserResponses, participant } = useVote();
+  const { test, pollData, setPollId, userResponses, setUserResponses, participant, pageType, setPageType } = useVote();
   console.log(test);
   console.log("VoteGroupPoll rendering");
   console.log("pollData", pollData);
@@ -21,7 +21,10 @@ export default function VoteGroupPoll() {
   console.log("responses", userResponses);
   const navigate = useNavigate();
   const pollId = params.groupPollId || "";
-  useEffect(() => setPollId(pollId), []);
+  useEffect(() => {
+    setPollId(pollId);
+    setPageType("vote");
+  }, []);
 
   const pollDataAvailable = !!pollData;
   const urlConfirmPage = `/meeting/participate/id/${pollId}/vote/confirm`;
@@ -66,7 +69,7 @@ export default function VoteGroupPoll() {
               showLegend={false}
               showTip={false}
             >
-              <VoteTable />
+              <VoteTable variant="vote" />
             </PaginationWrapper>
           </div>
         </div>

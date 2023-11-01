@@ -8,8 +8,11 @@ import ResponsesTable from "./ResponsesTable";
 import SlotDetails from "./SlotDetails";
 import SlotVote from "./SlotVote";
 
-export function VoteTable({ readOnly = false, countIcon }: { readOnly?: boolean; countIcon?: "people" | "tick" }) {
+export function VoteTable({ variant }: { variant: string }) {
+  const readOnly = ["overview", "organiser overview"].includes(variant);
+  const countIcon = readOnly ? "people" : "tick";
   const { test, pollData, setPollId, userResponses, setUserResponses, participant, isDesktop } = useVote();
+
   console.log("isDesktop", isDesktop);
   console.log(pollData);
   const { slotsShown } = useContext(PaginationContext);
@@ -53,7 +56,7 @@ export function VoteTable({ readOnly = false, countIcon }: { readOnly?: boolean;
                     <SlotDetails key={event.id.toString()} event={event} />
                   ) : ( */}
                   <SlotVote
-                    variant={readOnly ? "read" : "vote"}
+                    variant={variant}
                     key={event.id.toString()}
                     slot={event}
                     vote={userResponses.find((v) => v.id == event.id)?.response as string}
@@ -75,7 +78,7 @@ export function VoteTable({ readOnly = false, countIcon }: { readOnly?: boolean;
       <ResponsesTable
         displayedSlotsIds={slotsShown}
         pollData={pollData}
-        variant={readOnly ? "overview" : "vote"}
+        variant={variant} //{readOnly ? "overview" : "vote"}
         currentParticipantPosition={readOnly ? "top" : "exclude"}
         countIcon={countIcon}
       />

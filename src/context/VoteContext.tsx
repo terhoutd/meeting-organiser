@@ -14,6 +14,7 @@ export function useVote(): any {
 
 export function VoteProvider({ children }: { children: ReactNode }) {
   const [pollId, setPollId] = useState<string>();
+  const [pageType, setPageType] = useState<string>();
   const [pollData, setPollData] = useState<PollData>();
   const [userResponses, setUserResponses] = useState<TimesResponse[]>();
   const [participant, setParticipant] = useState<Participant>();
@@ -66,6 +67,8 @@ export function VoteProvider({ children }: { children: ReactNode }) {
     invitedParticipants,
     organizerParticipant,
     isDesktop,
+    pageType,
+    setPageType,
   };
   return <VoteContext.Provider value={value}>{children} </VoteContext.Provider>;
 }

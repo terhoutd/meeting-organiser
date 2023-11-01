@@ -59,7 +59,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
   const params = useParams();
   const pollId = isEdit ? params.groupPollId : "";
 
-  const { pollData } = useVote();
+  const { pollData, isDesktop, setPollId } = useVote();
   const isPollDataAvailable = !!pollData;
   const [loading, setLoading] = useState(isEdit);
   const [events, setEvents] = useState<CalEvent[]>([]);
@@ -73,8 +73,17 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
   const previousDurationTabIndexRef = useRef<number>(defaultIndex);
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
 
+  useEffect(() => setPollId(pollId), []);
+  useEffect(() => console.log("events", events), [events]);
+
+  useEffect(() => {
+    if (isEdit && !pollData) return;
+    setLoading(false);
+  }, [pollData]);
+
   useEffect(() => {
     if (!isEdit || loading) return;
+    console.log("loading use effect");
     setEvents(pollData.slots);
     setTitle(pollData.title);
     setEmail(pollData.organiserEmail);
@@ -226,7 +235,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
     );
   }, [duration]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading || events.length == 0) return <div>Loading...</div>;
 
   return (
     <div className="">
@@ -323,8 +332,8 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
                 console.log(p);
                 handleSelectSlot(p);
               }}
-              selectable
-              onSelecting={() => false}
+              selectable={true}
+              onSelecting={() => console.log("onSelecting")}
               step={30}
               timeslots={2}
               views={["week"]}
@@ -339,25 +348,28 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
           </div>
         </div>
 
-        <div className="fixed right-0 bottom-0 flex  w-full justify-center border-t border-zinc-400 bg-white">
-          <div className="flex w-full max-w-[1000px] justify-end  px-8 ">
-            {isEdit ? (
+        <div className="fixed right-0 bottom-0 z-10 flex  w-full  justify-center border-t border-zinc-400 bg-white">
+          <div className="flex w-full max-w-[1000px] items-center justify-between px-8">
+            <span className="font-bold"> {events.length} times selected</span>
+            <div className="flex gap-3">
+              {isEdit ? (
+                <input
+                  type="button"
+                  onClick={() => {
+                    navigate("/meeting/organize/id/" + pollId);
+                  }}
+                  className="my-4 bg-blue-600 p-3 text-white"
+                  value={"Cancel"}
+                />
+              ) : (
+                ""
+              )}
               <input
-                type="button"
-                onClick={() => {
-                  navigate("/meeting/organize/id/" + pollId);
-                }}
-                className="mr-7 mt-7 bg-blue-600 p-3 text-white"
-                value={"Cancel"}
+                type="submit"
+                className=" my-4 bg-blue-600 p-3 text-white"
+                value={isEdit ? "Save" : isDesktop ? "Create invite and continue" : "Continue"}
               />
-            ) : (
-              ""
-            )}
-            <input
-              type="submit"
-              className=" my-4 bg-blue-600 p-3 text-white"
-              value={isEdit ? "Save" : "Create invite and continue"}
-            />
+            </div>
           </div>
         </div>
       </form>

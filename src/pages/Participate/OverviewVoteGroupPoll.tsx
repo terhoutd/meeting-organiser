@@ -74,7 +74,7 @@ export default function OverviewVoteGroupPoll() {
               showLegend={true}
               showTip={false}
             >
-              <VoteTable readOnly={true} countIcon="people" />
+              <VoteTable variant="overview" />
             </PaginationWrapper>
           </div>
         </div>

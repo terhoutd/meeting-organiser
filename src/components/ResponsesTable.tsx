@@ -8,13 +8,11 @@ import { useVote } from "../context/voteContext";
 export default function ResponsesTable({
   pollData,
   displayedSlotsIds,
-  variant = "vote",
   currentParticipantPosition = "exclude",
   countIcon = "tick",
 }: {
   pollData: PollData;
   displayedSlotsIds: any[];
-  variant?: string;
   currentParticipantPosition?: "exclude" | "top";
   countIcon?: "tick" | "people";
 }) {

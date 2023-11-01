@@ -9,17 +9,7 @@ import SlotYesCount from "./SlotYesCount";
 import { useVote } from "../context/voteContext";
 import NoTickSvg from "../assets/noTickSvg";
 
-export default function SlotVote({
-  slot,
-  vote,
-  setVote,
-  variant = "vote",
-}: {
-  slot: FsSlot;
-  vote: string;
-  setVote: any;
-  variant: "vote" | "read";
-}) {
+export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: string; setVote: any }) {
   function handleClick() {
     let newVote = NO_VOTE;
     if (isNoVote) newVote = YES_VOTE;
@@ -29,8 +19,8 @@ export default function SlotVote({
     console.log("click");
   }
 
-  const canVote = variant == "vote";
-  const { pollData } = useVote();
+  const { pollData, pageType } = useVote();
+  const canVote = pageType == "vote";
 
   const isNoVote = vote === NO_VOTE;
   const isYesVote = vote === YES_VOTE;
@@ -47,7 +37,7 @@ export default function SlotVote({
     >
       <SlotDetails event={slot} />
       <div className="flex items-center">
-        {!canVote && (
+        {!canVote && pageType != "organiser overview" && (
           <div className="mr-5  w-6">
             {isYesVote && <YesTickSvg className={"w-4 text-green-700"} />}
             {isIfneedbeVote && <IfNeedBeSvg className={"w-6 text-green-700"} />}
