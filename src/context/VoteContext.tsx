@@ -42,15 +42,19 @@ export function VoteProvider({ children }: { children: ReactNode }) {
         console.log("No such document!");
         return;
       }
-      const pollData = pollDocSnap.data() as PollData;
-      console.log("Document data:", pollData);
+      const pollDataSnap = pollDocSnap.data() as PollData;
+      console.log("Document data:", pollDataSnap);
       //get all the docs in the participants collection and their data to our object
       const votesDocsSnaps = await getDocs(collection(pollDocRef, "participants"));
-      console.log(votesDocsSnaps);
-      pollData.participants = votesDocsSnaps.docs.map((v) => {
+      pollDataSnap.participants = votesDocsSnaps.docs.map((v) => {
         return v.data() as ParticipantFullInfo;
       });
-      setPollData(pollData);
+      pollDataSnap.slots.sort((a, b) => {
+        if (a.start.toDate() < b.start.toDate()) return -1;
+        if (a.start.toDate() > b.start.toDate()) return 1;
+        return 0;
+      });
+      setPollData(pollDataSnap);
     }
     if (!pollId) return;
     fetchData();

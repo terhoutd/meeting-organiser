@@ -20,7 +20,7 @@ export default function EventMetaData({ excludeParticipantCount }: { excludePart
     setIsExpanded(!isExpanded);
   }
   return (
-    <div className="relative flex flex-col p-4 lg:p-0">
+    <div className="relative flex flex-col">
       <button
         className={`absolute top-3 right-3 h-6 w-6 rounded-sm outline-blue-800 focus:outline lg:hidden`}
         onClick={clickHandler}

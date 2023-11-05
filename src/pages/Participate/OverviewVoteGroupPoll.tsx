@@ -11,10 +11,11 @@ import PaginationWrapper, { PaginationContext } from "../../components/Paginatio
 import { VoteTable } from "../../components/VoteTable";
 import EventMetaData from "../../components/EventMetaData";
 import CalendarAcceptIcon from "../../assets/CalendarSvg";
+import ResponseLegend from "../../components/ResponseLegend";
 
 export default function OverviewVoteGroupPoll() {
   let params = useParams();
-  const { test, pollData, setPollId, userResponses, setUserResponses, participant } = useVote();
+  const { test, pollData, setPollId, userResponses, setUserResponses, participant, setPageType } = useVote();
   console.log(test);
   console.log("VoteGroupPoll rendering");
   console.log("pollData", pollData);
@@ -22,7 +23,10 @@ export default function OverviewVoteGroupPoll() {
   console.log("responses", userResponses);
   const navigate = useNavigate();
   const pollId = params.groupPollId || "";
-  useEffect(() => setPollId(pollId), []);
+  useEffect(() => {
+    setPollId(pollId);
+    setPageType("vote overview");
+  }, []);
 
   const pollDataAvailable = !!pollData;
   const urlConfirmPage = `/meeting/participate/id/${pollId}/vote/confirm`;
@@ -45,7 +49,7 @@ export default function OverviewVoteGroupPoll() {
   };
   return (
     <div className="flex h-full flex-col ">
-      <div className=" relative mb-5 w-full border border-slate-300 bg-white p-8">
+      <div className=" relative mb-5 w-full border border-slate-300 bg-white p-4 lg:p-8">
         <div className="align-center flex">
           <div className="mr-[10px]">
             <CalendarAcceptIcon />
@@ -59,22 +63,25 @@ export default function OverviewVoteGroupPoll() {
           Change your response
         </Button>
       </div>
-      <div className=" relative w-full bg-white sm:px-0 lg:border lg:border-slate-300">
+      <div className=" relative w-full border border-slate-300 bg-white sm:px-0">
         <div className="flex  flex-col	 justify-between lg:mt-8">
-          <div className="lg:px-8">
+          <div className="p-4 lg:px-8">
             <EventMetaData excludeParticipantCount={true} />
-
-            <p className="mb-2 font-semibold">Availabilities</p>
           </div>
-
+          <div className=" mx-4 mb-4 lg:hidden ">
+            <p className="mb-2 font-semibold">Availabilities</p>
+            <ResponseLegend column={false} extended={false} />
+          </div>
           <div className="lg:pl-8 ">
+            <div className="mb-2 hidden lg:block">Availabilities</div>
             <PaginationWrapper
               slotList={pollData.slots}
               maxSlotsPerPage={maxSlotsPerPage}
               showLegend={true}
               showTip={false}
             >
-              <VoteTable variant="overview" />
+              <div className="mr-[70px] flex justify-end lg:hidden">Your response</div>
+              <VoteTable />
             </PaginationWrapper>
           </div>
         </div>

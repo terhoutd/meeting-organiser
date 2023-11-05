@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/Button";
 import MeetingOverview from "../../components/MeetingOverview";
@@ -53,13 +53,19 @@ export default function ConfirmVoteGroupPoll() {
   const pollId = params.groupPollId || "";
   const navigate = useNavigate();
 
-  const { pollData, setPollData, setPollId, userResponses, participant, setParticipant } = useVote();
+  const { pollData, setPollData, setPollId, userResponses, participant, setParticipant, setPageType, pageType } =
+    useVote();
   console.log("confirm", pollData, userResponses);
 
-  const [name, setName] = useState(participant?.name);
+  useEffect(() => {
+    setPageType("vote confirm");
+  }, []);
+
+  /*TODO  NEED TP UPDATE
+  const [name, setName] = useState(participant?.name); 
   const [email, setEmail] = useState(participant?.email);
   const [slotPage, setSlotPage] = useState(1);
-
+  */
   if (!pollData) return <span>no data yet</span>;
 
   const { slots }: { slots: FsSlot[] } = pollData;
@@ -72,8 +78,8 @@ export default function ConfirmVoteGroupPoll() {
 
   return (
     <div className="flex h-[700px] flex-col bg-white lg:flex-row">
-      <div className={" w-full lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
-        <MeetingOverview />
+      <div className={" w-full p-4 lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8"}>
+        <MeetingOverview variant={pageType} />
       </div>
 
       <div className=" flex w-[100vw]  flex-col border-t border-slate-300 px-4 lg:w-[750px] lg:border lg:border-slate-300 lg:px-8  lg:pt-8">
@@ -86,7 +92,7 @@ export default function ConfirmVoteGroupPoll() {
           <PaginationWrapper
             slotList={acceptedSlots}
             maxSlotsPerPage={maxSlotsPerPage}
-            showLegend={false}
+            showLegend={true}
             showTip={false}
           >
             <SelectedSlots />

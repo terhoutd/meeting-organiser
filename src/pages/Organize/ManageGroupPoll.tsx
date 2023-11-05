@@ -5,7 +5,6 @@ import { NO_VOTE } from "../../others/Constants";
 
 import Button from "../../components/Button";
 import { useVote } from "../../context/voteContext";
-import MeetingOverview from "../../components/MeetingOverview";
 import ResponseLegend from "../../components/ResponseLegend";
 import ParticipationHeaders from "../../components/ParticipationHeader";
 import PaginationWrapper from "../../components/PaginationWrapper";
@@ -13,22 +12,17 @@ import { VoteTable } from "../../components/VoteTable";
 
 export default function ManageGroupPoll() {
   let params = useParams();
-  const { test, pollData, setPollId, userResponses, setUserResponses, setParticipant, setPageType } = useVote();
-  console.log(test);
-  console.log("VoteGroupPoll rendering");
-  console.log("pollData", pollData);
+  const { pollData, setPollId, userResponses, setUserResponses, setParticipant, setPageType } = useVote();
 
-  console.log("responses", userResponses);
   const navigate = useNavigate();
   const pollId = params.groupPollId || "";
   useEffect(() => {
     setPollId(pollId);
-    // setParticipant()
-    setPageType("organiser overview");
+    setPageType("poll overview");
   }, []);
 
   const pollDataAvailable = !!pollData;
-  const urlConfirmPage = `/meeting/participate/id/${pollId}/vote/confirm`;
+  const urlConfirmPage = `/meeting/organize/id/${pollId}/edit`;
   useEffect(() => {
     console.log("usef1", pollDataAvailable, userResponses, pollData);
     if (!pollDataAvailable) return;

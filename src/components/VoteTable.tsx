@@ -8,10 +8,10 @@ import ResponsesTable from "./ResponsesTable";
 import SlotDetails from "./SlotDetails";
 import SlotVote from "./SlotVote";
 
-export function VoteTable({ variant }: { variant: string }) {
-  const readOnly = ["overview", "organiser overview"].includes(variant);
+export function VoteTable() {
+  const { test, pollData, setPollId, userResponses, setUserResponses, participant, isDesktop, pageType } = useVote();
+  const readOnly = ["vote overview", "poll overview"].includes(pageType);
   const countIcon = readOnly ? "people" : "tick";
-  const { test, pollData, setPollId, userResponses, setUserResponses, participant, isDesktop } = useVote();
 
   console.log("isDesktop", isDesktop);
   console.log(pollData);
@@ -44,7 +44,7 @@ export function VoteTable({ variant }: { variant: string }) {
       </div>
       <div
         style={{ gridArea: "slots" }}
-        className=" mb-[66px] mt-4 flex flex-col border-t border-slate-300 lg:mb-0 lg:flex-row lg:border-t-0"
+        className=" mb-[66px] flex flex-col border-t border-slate-300 lg:mt-4 lg:mb-0 lg:flex-row lg:border-t-0"
       >
         <AnimatePresence initial={false} mode={"wait"}>
           {pollData.slots
@@ -56,7 +56,6 @@ export function VoteTable({ variant }: { variant: string }) {
                     <SlotDetails key={event.id.toString()} event={event} />
                   ) : ( */}
                   <SlotVote
-                    variant={variant}
                     key={event.id.toString()}
                     slot={event}
                     vote={userResponses.find((v) => v.id == event.id)?.response as string}
@@ -78,7 +77,6 @@ export function VoteTable({ variant }: { variant: string }) {
       <ResponsesTable
         displayedSlotsIds={slotsShown}
         pollData={pollData}
-        variant={variant} //{readOnly ? "overview" : "vote"}
         currentParticipantPosition={readOnly ? "top" : "exclude"}
         countIcon={countIcon}
       />

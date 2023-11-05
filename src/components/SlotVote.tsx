@@ -37,8 +37,8 @@ export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: 
     >
       <SlotDetails event={slot} />
       <div className="flex items-center">
-        {!canVote && pageType != "organiser overview" && (
-          <div className="mr-5  w-6">
+        {!canVote && (
+          <div className="mr-5  w-6 lg:hidden">
             {isYesVote && <YesTickSvg className={"w-4 text-green-700"} />}
             {isIfneedbeVote && <IfNeedBeSvg className={"w-6 text-green-700"} />}
             {isNoVote && <NoTickSvg className={"w-6 text-zinc-400"} />}

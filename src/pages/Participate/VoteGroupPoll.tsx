@@ -38,15 +38,15 @@ export default function VoteGroupPoll() {
 
   if (!pollData || !userResponses) return <span>no data yet</span>;
 
-  const isAllDeclined = userResponses.every((r) => {
-    return r.response === NO_VOTE;
-  });
+  // const isAllDeclined = userResponses.every((r) => {
+  //   return r.response === NO_VOTE;
+  // });
 
   const maxSlotsPerPage = 5;
 
   return (
     <div className="flex  h-[700px] flex-col bg-white lg:flex-row">
-      <div className={" w-full border-b lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8 "}>
+      <div className={" w-full border-b p-4 lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8"}>
         <MeetingOverview />
       </div>
       <div className=" relative w-full sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
@@ -57,7 +57,7 @@ export default function VoteGroupPoll() {
               subText="We’ll let you know when the organizer picks the best time"
             />
           </div>
-          <div className=" mx-4 lg:hidden ">
+          <div className=" mx-4 mb-2 lg:hidden ">
             <p className="mb-2 font-semibold">Availabilities</p>
             <ResponseLegend column={false} extended={false} />
           </div>
@@ -78,9 +78,7 @@ export default function VoteGroupPoll() {
             Decline
           </Button>
           <span className="hidden lg:inline-block">Selecting more times makes it easier to find the best option</span>
-          <Button onClick={continueHandler} disabled={isAllDeclined}>
-            Continue
-          </Button>
+          <Button onClick={continueHandler}>Continue</Button>
         </div>
       </div>
     </div>

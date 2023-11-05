@@ -24,6 +24,8 @@ import { CloseSvg } from "../../assets/CloseSvg";
 import { m } from "framer-motion";
 import Button from "../../components/Button";
 import { useVote } from "../../context/voteContext";
+import { Field, Form, Formik } from "formik";
+import * as Yup from "yup";
 
 type DurationObject = {
   duration: Duration;
@@ -59,7 +61,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
   const params = useParams();
   const pollId = isEdit ? params.groupPollId : "";
 
-  const { pollData, isDesktop, setPollId } = useVote();
+  const { pollData, isDesktop, setPollId, setPageType } = useVote();
   const isPollDataAvailable = !!pollData;
   const [loading, setLoading] = useState(isEdit);
   const [events, setEvents] = useState<CalEvent[]>([]);
@@ -73,7 +75,18 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
   const previousDurationTabIndexRef = useRef<number>(defaultIndex);
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
 
-  useEffect(() => setPollId(pollId), []);
+  const emailMessage = "We need your email to send you the final event details.";
+  const DisplayingErrorMessagesSchema = Yup.object().shape({
+    username: Yup.string()
+      .min(2, "Too Short!")
+      .max(50, "Too Long!")
+      .required("We need your name to add it to your response."),
+    email: Yup.string().email(emailMessage).required(emailMessage),
+  });
+  useEffect(() => {
+    setPollId(pollId);
+    setPageType(`poll ${variant}`);
+  }, []);
   useEffect(() => console.log("events", events), [events]);
 
   useEffect(() => {
@@ -84,7 +97,11 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
   useEffect(() => {
     if (!isEdit || loading) return;
     console.log("loading use effect");
-    setEvents(pollData.slots);
+    setEvents(() => {
+      return pollData.slots.map((ev) => {
+        return getCalEventFromFbEvent(ev);
+      });
+    });
     setTitle(pollData.title);
     setEmail(pollData.organiserEmail);
     setName(pollData.organiserName);
@@ -158,14 +175,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
       console.error("Error adding document: ", e);
     }
   };
-  function getIsAllDayEventClick({ start, end }: ClickEvent) {
-    const { momentStart, momentEnd } = getMomentStartAndEndDate({ start, end });
-    const comp = momentStart.clone().add(24, "hours");
-    return momentEnd.isSame(comp);
-  }
-  function getMomentStartAndEndDate({ start, end }: { start: Date; end: Date }) {
-    return { momentStart: moment(start), momentEnd: moment(end) };
-  }
+
   const handleSelectSlot = useCallback(
     (event: ClickEvent) => {
       // console.log("handleSelectSlot");
@@ -211,22 +221,6 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
     });
   }, []);
 
-  function getComposedTimeEvent(event: CalEvent | ClickEvent, duration: Duration): CalEvent {
-    let { start } = event;
-    const momentStart = moment(start);
-    const momentEnd = momentStart.clone().add(duration, "minutes");
-
-    const showStartAm = momentStart.format("a") !== momentEnd.format("a");
-    const showStartMinutes = momentStart.format("mm") !== "00";
-    const showEndMinutes = momentEnd.format("mm") !== "00";
-    const displayStart = momentStart.format("h" + (showStartMinutes ? ":mm" : "") + (showStartAm ? " A" : ""));
-    const displayEnd = momentEnd.format("h" + (showEndMinutes ? ":mm" : "") + " A");
-    const title = displayStart + "-" + displayEnd;
-    const id = uuidv4();
-    const end = momentEnd.toDate();
-    return { start, end, title, id };
-  }
-
   useEffect(() => {
     setEvents(
       events.map((ev) => {
@@ -235,7 +229,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
     );
   }, [duration]);
 
-  if (loading || events.length == 0) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="">
@@ -246,6 +240,43 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
             className=" my-8
            flex flex-col"
           >
+            <Formik
+              initialValues={{
+                username: name || "",
+                email: email || "",
+              }}
+              validationSchema={DisplayingErrorMessagesSchema}
+              onSubmit={(values: onSubmitValue) => {
+                // same shape as initial values
+                console.log(values);
+                // voteHandler(values);
+              }}
+            >
+              {({ errors, touched, isValid, values }) => (
+                <Form>
+                  <div className="mt-6 mb-4">
+                    <label className="block" htmlFor="name">
+                      Your name
+                    </label>
+                    <Field name="username" component={CustomInput} placeholder="e.g. John Doe" />
+                    {/* If this field has been touched, and it contains an error, display it
+                     */}
+                    {touched.username && errors.username && (
+                      <div className="mt-2 text-red-500">{errors.username as string}</div>
+                    )}
+                  </div>
+                  <div className="mb-[86px] lg:mb-0">
+                    <label className="block" htmlFor="email">
+                      Your email
+                    </label>
+                    <Field name="email" component={CustomInput} placeholder="e.g. john.doe@email.com" />
+                    {/* If this field has been touched, and it contains an error, display
+           it */}
+                    {touched.email && errors.email && <div className="mt-2 text-red-500">{errors.email as string}</div>}
+                  </div>
+                </Form>
+              )}
+            </Formik>
             <label htmlFor="name">Your name</label>
             <input
               required
@@ -375,6 +406,38 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
       </form>
     </div>
   );
+  function getIsAllDayEventClick({ start, end }: ClickEvent) {
+    const { momentStart, momentEnd } = getMomentStartAndEndDate({ start, end });
+    const comp = momentStart.clone().add(24, "hours");
+    return momentEnd.isSame(comp);
+  }
+  function getMomentStartAndEndDate({ start, end }: { start: Date; end: Date }) {
+    return { momentStart: moment(start), momentEnd: moment(end) };
+  }
+  function getComposedTimeEvent(event: CalEvent | ClickEvent, duration: Duration): CalEvent {
+    let { start } = event;
+    const momentStart = moment(start);
+    const momentEnd = momentStart.clone().add(duration, "minutes");
+
+    const showStartAm = momentStart.format("a") !== momentEnd.format("a");
+    const showStartMinutes = momentStart.format("mm") !== "00";
+    const showEndMinutes = momentEnd.format("mm") !== "00";
+    const displayStart = momentStart.format("h" + (showStartMinutes ? ":mm" : "") + (showStartAm ? " A" : ""));
+    const displayEnd = momentEnd.format("h" + (showEndMinutes ? ":mm" : "") + " A");
+    const title = displayStart + "-" + displayEnd;
+    const id = uuidv4();
+    const end = momentEnd.toDate();
+    return { start, end, title, id };
+  }
+
+  function getCalEventFromFbEvent(fbEvent: any): CalEvent {
+    return {
+      start: fbEvent.start.toDate(),
+      end: fbEvent.end.toDate(),
+      title: fbEvent.title,
+      id: fbEvent.id,
+    };
+  }
 }
 
 function SwitchDurationDialog({
