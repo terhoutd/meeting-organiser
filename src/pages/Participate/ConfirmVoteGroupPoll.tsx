@@ -10,7 +10,7 @@ import ParticipationHeaders from "../../components/ParticipationHeader";
 import { useVote } from "../../context/voteContext";
 import { NO_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
-import { FsSlot, PollData } from "../../others/Types";
+import { FsSlot, onSubmitValue, PollData } from "../../others/Types";
 
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -26,10 +26,6 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
   email: Yup.string().email(emailMessage).required(emailMessage),
 });
 
-type onSubmitValue = {
-  username: string;
-  email: string;
-};
 export default function ConfirmVoteGroupPoll() {
   async function voteHandler(values: onSubmitValue) {
     console.log("voteHandler", values);
@@ -104,8 +100,9 @@ export default function ConfirmVoteGroupPoll() {
         </Link>
         <Formik
           initialValues={{
-            username: participant?.name || "",
-            email: participant?.email || "",
+            username: pollData?.organiserName || "",
+            email: pollData?.organiserEmail || "",
+            title: pollData?.title || "",
           }}
           validationSchema={DisplayingErrorMessagesSchema}
           onSubmit={(values: onSubmitValue) => {

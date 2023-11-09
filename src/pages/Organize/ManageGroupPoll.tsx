@@ -39,7 +39,7 @@ export default function ManageGroupPoll() {
     return r.response === NO_VOTE;
   });
 
-  const maxSlotsPerPage = 5;
+  const maxSlotsPerPage = 8;
 
   return (
     <div className="flex flex-col bg-white lg:flex-row">
@@ -77,7 +77,7 @@ export default function ManageGroupPoll() {
             <ResponseLegend column={false} extended={false} />
           </div>
 
-          <div className=" mb-8 ">
+          <div className=" mb-2 ">
             <PaginationWrapper
               slotList={pollData.slots}
               maxSlotsPerPage={maxSlotsPerPage}

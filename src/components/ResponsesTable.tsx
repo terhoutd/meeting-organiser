@@ -75,7 +75,7 @@ export default function ResponsesTable({
           // placeItems: "center",
           // paddingRight: "40px",
         }}
-        className="hidden lg:grid lg:h-[205px]"
+        className="hidden lg:grid lg:h-[230px]"
       >
         {sortedIncludedParticipants.map((participant) => (
           <React.Fragment key={participant.email}>

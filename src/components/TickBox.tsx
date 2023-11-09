@@ -67,7 +67,7 @@ export default function TickBox({ type, variant }: TickBoxType) {
         {isQuestion && <QuestionSvg className={`${isTable ? "h-7 w-7" : "h-5 w-6"} text-gray-500`} />}
         {isPending && <PendingSvg className={`${isTable ? "w-7" : "w-5"} text-slate-400`} />}
       </div>
-      {isLegend || isLegendFull ? <div className="shrink-0 pl-1 text-sm lg:text-sm">{legendText}</div> : ""}
+      {isLegend || isLegendFull ? <div className="shrink-0 pl-1 ">{legendText}</div> : ""}
     </div>
   );
 }

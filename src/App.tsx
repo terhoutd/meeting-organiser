@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import ManageGroupPoll from "./pages/Organize/ManageGroupPoll";
 import VoteGroupPoll from "./pages/Participate/VoteGroupPoll";
-import EditGroupPoll from "./pages/Organize/EditGroupPoll";
 import ConfirmVoteGroupPoll from "./pages/Participate/ConfirmVoteGroupPoll";
 import OverviewVoteGroupPoll from "./pages/Participate/OverviewVoteGroupPoll";
 import { VoteProvider } from "./context/voteContext";

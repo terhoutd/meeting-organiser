@@ -28,7 +28,7 @@ export function VoteTable() {
 '${" participants".repeat(slotsShown.length + 1)}'
 `,
       }}
-      className={`flex ${!readOnly ? "" : "mb-5 "} flex-col lg:grid`}
+      className={`flex ${!readOnly ? "" : "my-4 "} flex-col lg:grid`}
     >
       <div className="hidden h-full w-full flex-col justify-end lg:flex " style={{ gridArea: "top-left" }}>
         {readOnly ? (

@@ -18,7 +18,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { db } from "../../others/firebase";
 import { CalEvent, responseOption } from "../../others/Types";
-import { YES_VOTE } from "../../others/Constants";
+import { ROOT_DOC_NAME, YES_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
 import { CloseSvg } from "../../assets/CloseSvg";
 import { m } from "framer-motion";
@@ -26,7 +26,12 @@ import Button from "../../components/Button";
 import { useVote } from "../../context/voteContext";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+import { CustomInput } from "../../components/CustomInput";
 
+type onSubmitValue = {
+  username: string;
+  email: string;
+};
 type DurationObject = {
   duration: Duration;
   title: string;
@@ -55,39 +60,39 @@ type ClickEvent = {
   start: Date;
   end: Date;
 };
-type CreateEditGroupPollVariant = "create" | "edit";
-export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollVariant }) {
+
+export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" }) {
+  const defaultIndex = 2;
   const isEdit = variant === "edit";
   const params = useParams();
-  const pollId = isEdit ? params.groupPollId : "";
+  const navigate = useNavigate();
 
-  const { pollData, isDesktop, setPollId, setPageType } = useVote();
-  const isPollDataAvailable = !!pollData;
+  const pollId = isEdit ? params.groupPollId : "";
+  const { pollData, isDesktop, setPollId, setPageType, setPollData } = useVote();
+
   const [loading, setLoading] = useState(isEdit);
   const [events, setEvents] = useState<CalEvent[]>([]);
   const [duration, setDuration] = useState<Duration>(60);
-  const [title, setTitle] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const defaultIndex = 2;
+  const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const clickedDurationTabIndexRef = useRef<number>(defaultIndex);
   const previousDurationTabIndexRef = useRef<number>(defaultIndex);
-  const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
 
-  const emailMessage = "We need your email to send you the final event details.";
   const DisplayingErrorMessagesSchema = Yup.object().shape({
     username: Yup.string()
       .min(2, "Too Short!")
       .max(50, "Too Long!")
-      .required("We need your name to add it to your response."),
-    email: Yup.string().email(emailMessage).required(emailMessage),
+      .required("We need your name so guests know who you are."),
+    email: Yup.string()
+      .email("Enter a vavlid email address")
+      .required("We need your email to send you notifications when answers come."),
+    title: Yup.string().required("We need a title for your meeting"),
   });
+
   useEffect(() => {
     setPollId(pollId);
     setPageType(`poll ${variant}`);
   }, []);
-  useEffect(() => console.log("events", events), [events]);
 
   useEffect(() => {
     if (isEdit && !pollData) return;
@@ -96,76 +101,60 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
 
   useEffect(() => {
     if (!isEdit || loading) return;
-    console.log("loading use effect");
     setEvents(() => {
       return pollData.slots.map((ev) => {
         return getCalEventFromFbEvent(ev);
       });
     });
-    setTitle(pollData.title);
-    setEmail(pollData.organiserEmail);
-    setName(pollData.organiserName);
   }, [loading]);
 
-  const navigate = useNavigate();
-  const components = {
-    toolbar: Toolbar,
-    week: { header: CalendarWeekHeader },
-    event: ({ event, title }) => {
-      return (
-        <div>
-          {event.title}
-          <div
-            className="cross"
-            onClick={() => {
-              console.log("click on cross");
-              setEvents((prev) => {
-                return prev.filter((ev) => ev.id !== event.id);
-              });
-            }}
-          >
-            <CloseSvg />
-          </div>
-        </div>
-      );
-    },
-  };
+  useEffect(() => {
+    setEvents(
+      events.map((ev) => {
+        return getComposedTimeEvent(ev, duration);
+      })
+    );
+  }, [duration]);
 
-  const updatePollHandler = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  async function updatePollHandler({ title, email, username }: onSubmitValue) {
     try {
-      // if (!pollId) return;
-      await setDoc(doc(db, "group polls", pollId as string), {
+      await setDoc(doc(db, ROOT_DOC_NAME, pollId as string), {
         title: title,
         slots: events,
         organiserEmail: email,
-        organiserName: name,
-        //participants: [defaultVotes],
+        organiserName: username,
+      });
+      setPollData((prevState) => {
+        if (!prevState) return;
+        const pd = { ...prevState };
+        pd.title = title;
+        pd.slots = events;
+        pd.organiserEmail = email;
+        pd.organiserName = username;
+        return pd;
       });
 
       navigate("/meeting/organize/id/" + pollId);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
-  };
-  const createPollHandler = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  }
+  async function createPollHandler({ title, email, username }: onSubmitValue) {
     try {
       const defaultResponses = events.map((ev) => {
         return { id: ev.id, response: YES_VOTE as responseOption };
       });
-      const docRef = await addDoc(collection(db, "group polls"), {
+      const docRef = await addDoc(collection(db, ROOT_DOC_NAME), {
         title: title,
         slots: events,
         organiserEmail: email,
-        organiserName: name,
-        //participants: [defaultVotes],
+        organiserName: username,
       });
       console.log("Document written with ID: ", docRef.id);
       const pollId = docRef.id;
       uploadParticipantInfo(pollId, {
         isOrganiser: true,
-        name: name,
+        name: username,
         email: email,
         responses: defaultResponses,
       });
@@ -174,7 +163,7 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
     } catch (e) {
       console.error("Error adding document: ", e);
     }
-  };
+  }
 
   const handleSelectSlot = useCallback(
     (event: ClickEvent) => {
@@ -221,189 +210,178 @@ export function CreateEditGroupPoll({ variant }: { variant: CreateEditGroupPollV
     });
   }, []);
 
-  useEffect(() => {
-    setEvents(
-      events.map((ev) => {
-        return getComposedTimeEvent(ev, duration);
-      })
-    );
-  }, [duration]);
-
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="">
-      <form className="overflow-x-hidden" onSubmit={isEdit ? updatePollHandler : createPollHandler}>
-        <div className="w-full border border-zinc-100 bg-white p-4 lg:p-8">
-          <h1 className="ml-[-22px] mr-[-22px] border-b px-4 pb-8 text-4xl">Create group poll</h1>
-          <div
-            className=" my-8
-           flex flex-col"
-          >
-            <Formik
-              initialValues={{
-                username: name || "",
-                email: email || "",
-              }}
-              validationSchema={DisplayingErrorMessagesSchema}
-              onSubmit={(values: onSubmitValue) => {
-                // same shape as initial values
-                console.log(values);
-                // voteHandler(values);
-              }}
-            >
-              {({ errors, touched, isValid, values }) => (
-                <Form>
-                  <div className="mt-6 mb-4">
-                    <label className="block" htmlFor="name">
-                      Your name
-                    </label>
-                    <Field name="username" component={CustomInput} placeholder="e.g. John Doe" />
-                    {/* If this field has been touched, and it contains an error, display it
-                     */}
-                    {touched.username && errors.username && (
-                      <div className="mt-2 text-red-500">{errors.username as string}</div>
-                    )}
-                  </div>
-                  <div className="mb-[86px] lg:mb-0">
-                    <label className="block" htmlFor="email">
-                      Your email
-                    </label>
-                    <Field name="email" component={CustomInput} placeholder="e.g. john.doe@email.com" />
-                    {/* If this field has been touched, and it contains an error, display
-           it */}
-                    {touched.email && errors.email && <div className="mt-2 text-red-500">{errors.email as string}</div>}
-                  </div>
-                </Form>
-              )}
-            </Formik>
-            <label htmlFor="name">Your name</label>
-            <input
-              required
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="border-2 px-2 py-2"
-            />
-          </div>
-          <div className=" my-8 flex flex-col">
-            <label htmlFor="email">Your email</label>
-            <input
-              required
-              type="text"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="py4 border-2 px-2 py-2"
-            />
-          </div>
-          <div className=" my-8 flex flex-col">
-            <label htmlFor="title">Title of your poll</label>
-            <input
-              required
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="py4 border-2 px-2 py-2"
-            />
-          </div>
-        </div>
-        <div className="mt-2 mb-[92px] w-full border border-zinc-100 bg-white p-4 lg:p-8 ">
-          <h2 className="pb-4  text-3xl ">Add your times</h2>
-          <label className="my-2 block">Duration</label>
-          <Tab.Group
-            selectedIndex={selectedIndex}
-            onChange={(i) => {
-              const durationFromClickedTab = durations[i].duration;
-              clickedDurationTabIndexRef.current = i;
-              const curentDurationIsAllDay = duration === "all day";
-              const newDurationIsAllDay = durationFromClickedTab === "all day";
-
-              if (curentDurationIsAllDay !== newDurationIsAllDay && events.length > 0) {
-                setIsOpen(true);
-              } else {
-                setDuration(durationFromClickedTab);
-                setSelectedIndex(i);
-              }
-              previousDurationTabIndexRef.current = i;
+      {/* <form className="overflow-x-hidden"> */}
+      <div className="w-full border border-zinc-100 bg-white p-4 lg:p-8">
+        <h1 className="ml-[-22px] mr-[-22px] border-b px-4 pb-8 text-4xl">Create group poll</h1>
+        <div className=" my-8 flex flex-col">
+          <Formik
+            initialValues={{
+              username: pollData?.organiserName || "",
+              email: pollData?.organiserEmail || "",
+              title: pollData?.title || "",
+            }}
+            validationSchema={DisplayingErrorMessagesSchema}
+            onSubmit={(values: onSubmitValue) => {
+              // same shape as initial values
+              console.log(values);
+              // voteHandler(values);
+              isEdit ? updatePollHandler(values) : createPollHandler(values);
             }}
           >
-            <Tab.List className="mb-4 flex rounded-sm">
-              {durations.map((d) => (
-                <Tab
-                  key={d.title}
-                  className={({ selected }) =>
-                    clsx(
-                      "rounded-none border-2 py-2 px-6 focus:outline-none",
-                      selected ? " border-blue-700 bg-blue-600 text-white" : "text-gray-500 "
-                    )
-                  }
-                >
-                  {d.title}
-                </Tab>
-              ))}
-            </Tab.List>
-          </Tab.Group>
-          <SwitchDurationDialog
-            setEvents={setEvents}
-            setDuration={setDuration}
-            setIsOpen={setIsOpen}
-            isOpen={isOpen}
-            clickedDurationTabIndexRef={clickedDurationTabIndexRef}
-            setSelectedIndex={setSelectedIndex}
-          />
-          <div className="rbc-wrapper h-[660px] lg:mt-8 ">
-            <DnDCalendar
-              slotPropGetter={slotPropGetter}
-              localizer={localizer}
-              events={events}
-              onSelectSlot={(p) => {
-                console.log(p);
-                handleSelectSlot(p);
-              }}
-              selectable={true}
-              onSelecting={() => console.log("onSelecting")}
-              step={30}
-              timeslots={2}
-              views={["week"]}
-              defaultView={"week"}
-              // timeslots={1 * (60 / step)}
-              toolbar={true}
-              components={components as any}
-              onEventDrop={onEventDrop}
-              resizable={false}
-              showMultiDayTimes={true}
-            />
-          </div>
+            {({ errors, touched, isValid, values }) => (
+              <Form>
+                <div className="mb-4">
+                  <label className="block" htmlFor="name">
+                    Your name
+                  </label>
+                  <Field name="username" component={CustomInput} placeholder="e.g. John Doe" />
+                  {/* If this field has been touched, and it contains an error, display it
+                   */}
+                  {touched.username && errors.username && (
+                    <div className="mt-2 text-red-500">{errors.username as string}</div>
+                  )}
+                </div>
+                <div className="mb-4">
+                  <label className="block" htmlFor="email">
+                    Your email
+                  </label>
+                  <Field name="email" component={CustomInput} placeholder="e.g. john.doe@email.com" />
+                  {/* If this field has been touched, and it contains an error, display
+           it */}
+                  {touched.email && errors.email && <div className="mt-2 text-red-500">{errors.email as string}</div>}
+                </div>
+                <div className="mb-4">
+                  <label className="block" htmlFor="title">
+                    Title
+                  </label>
+                  <Field name="title" component={CustomInput} placeholder="my meeting" />
+                  {/* If this field has been touched, and it contains an error, display
+           it */}
+                  {touched.title && errors.title && <div className="mt-2 text-red-500">{errors.title as string}</div>}
+                </div>
+                <div className="fixed right-0 bottom-0 z-10 flex  w-full  justify-center border-t border-zinc-400 bg-white">
+                  <div className="flex w-full max-w-[1000px] items-center justify-between px-8">
+                    <span className="font-bold"> {events.length} times selected</span>
+                    <div className="flex gap-3">
+                      {isEdit ? (
+                        <input
+                          type="button"
+                          onClick={() => {
+                            navigate("/meeting/organize/id/" + pollId);
+                          }}
+                          className="my-4 bg-blue-600 p-3 text-white"
+                          value={"Cancel"}
+                        />
+                      ) : (
+                        ""
+                      )}
+                      <input
+                        type="submit"
+                        className=" my-4 bg-blue-600 p-3 text-white"
+                        value={isEdit ? "Save" : isDesktop ? "Create invite and continue" : "Continue"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
+      </div>
+      <div className="mt-2 mb-[92px] w-full border border-zinc-100 bg-white p-4 lg:p-8 ">
+        <h2 className="pb-4  text-3xl ">Add your times</h2>
+        <label className="my-2 block">Duration</label>
+        <Tab.Group
+          selectedIndex={selectedIndex}
+          onChange={(i) => {
+            const durationFromClickedTab = durations[i].duration;
+            clickedDurationTabIndexRef.current = i;
+            const curentDurationIsAllDay = duration === "all day";
+            const newDurationIsAllDay = durationFromClickedTab === "all day";
 
-        <div className="fixed right-0 bottom-0 z-10 flex  w-full  justify-center border-t border-zinc-400 bg-white">
-          <div className="flex w-full max-w-[1000px] items-center justify-between px-8">
-            <span className="font-bold"> {events.length} times selected</span>
-            <div className="flex gap-3">
-              {isEdit ? (
-                <input
-                  type="button"
-                  onClick={() => {
-                    navigate("/meeting/organize/id/" + pollId);
-                  }}
-                  className="my-4 bg-blue-600 p-3 text-white"
-                  value={"Cancel"}
-                />
-              ) : (
-                ""
-              )}
-              <input
-                type="submit"
-                className=" my-4 bg-blue-600 p-3 text-white"
-                value={isEdit ? "Save" : isDesktop ? "Create invite and continue" : "Continue"}
-              />
-            </div>
-          </div>
+            if (curentDurationIsAllDay !== newDurationIsAllDay && events.length > 0) {
+              setIsOpen(true);
+            } else {
+              setDuration(durationFromClickedTab);
+              setSelectedIndex(i);
+            }
+            previousDurationTabIndexRef.current = i;
+          }}
+        >
+          <Tab.List className="mb-4 flex rounded-sm">
+            {durations.map((d) => (
+              <Tab
+                key={d.title}
+                className={({ selected }) =>
+                  clsx(
+                    "rounded-none border-2 py-2 px-6 focus:outline-none",
+                    selected ? " border-blue-700 bg-blue-600 text-white" : "text-gray-500 "
+                  )
+                }
+              >
+                {d.title}
+              </Tab>
+            ))}
+          </Tab.List>
+        </Tab.Group>
+        <SwitchDurationDialog
+          setEvents={setEvents}
+          setDuration={setDuration}
+          setIsOpen={setIsOpen}
+          isOpen={isOpen}
+          clickedDurationTabIndexRef={clickedDurationTabIndexRef}
+          setSelectedIndex={setSelectedIndex}
+        />
+        <div className="rbc-wrapper h-[660px] lg:mt-8 ">
+          <DnDCalendar
+            slotPropGetter={slotPropGetter}
+            localizer={localizer}
+            events={events}
+            onSelectSlot={(p) => {
+              console.log(p);
+              handleSelectSlot(p);
+            }}
+            selectable={true}
+            onSelecting={() => console.log("onSelecting")}
+            step={30}
+            timeslots={2}
+            views={["week"]}
+            defaultView={"week"}
+            // timeslots={1 * (60 / step)}
+            toolbar={true}
+            components={{
+              toolbar: Toolbar,
+              week: { header: CalendarWeekHeader },
+              event: ({ event, title }) => {
+                return (
+                  <div>
+                    {event.title}
+                    <div
+                      className="cross"
+                      onClick={() => {
+                        console.log("click on cross");
+                        setEvents((prev) => {
+                          return prev.filter((ev) => ev.id !== event.id);
+                        });
+                      }}
+                    >
+                      <CloseSvg />
+                    </div>
+                  </div>
+                );
+              },
+            }}
+            onEventDrop={onEventDrop}
+            resizable={false}
+            showMultiDayTimes={true}
+          />
         </div>
-      </form>
+      </div>
+      {/* </form> */}
     </div>
   );
   function getIsAllDayEventClick({ start, end }: ClickEvent) {
