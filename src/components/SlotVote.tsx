@@ -27,7 +27,7 @@ export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: 
   const isIfneedbeVote = vote === IFNEEDBE_VOTE;
   return (
     <label
-      onClick={handleClick}
+      onClick={pageType == "vote overview" ? () => {} : handleClick}
       className={clsx(
         "flex cursor-pointer	items-center justify-between  border-b border-slate-300 p-4 lg:flex-col lg:justify-evenly lg:border-0 lg:p-0 lg:pt-0",
         canVote && isNoVote && " hover:bg-gray-50",

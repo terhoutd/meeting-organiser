@@ -28,7 +28,7 @@ export function VoteTable() {
 '${" participants".repeat(slotsShown.length + 1)}'
 `,
       }}
-      className={`flex ${!readOnly ? "" : "my-4 "} flex-col lg:grid`}
+      className={`flex ${!readOnly ? "" : "my-4 lg:-mr-8"} flex-col lg:grid`}
     >
       <div className="hidden h-full w-full flex-col justify-end lg:flex " style={{ gridArea: "top-left" }}>
         {readOnly ? (
@@ -44,7 +44,7 @@ export function VoteTable() {
       </div>
       <div
         style={{ gridArea: "slots" }}
-        className=" mb-[66px] flex flex-col border-t border-slate-300 lg:mt-4 lg:mb-0 lg:flex-row lg:border-t-0"
+        className=" flex flex-col border-t border-slate-300 lg:mt-4 lg:flex-row lg:border-t-0"
       >
         <AnimatePresence initial={false} mode={"wait"}>
           {pollData.slots

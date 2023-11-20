@@ -1,6 +1,7 @@
 import React from "react";
 import { Participant } from "../others/Types";
 export default function ParticipantNameLabel({ participant }: { participant: Participant }) {
+  if (!participant) return <div>error</div>;
   return (
     <div className=" flex w-full items-center justify-start gap-2">
       <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-50  lg:h-8 lg:w-8">

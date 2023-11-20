@@ -12,10 +12,10 @@ import { VoteTable } from "../../components/VoteTable";
 
 export default function ManageGroupPoll() {
   let params = useParams();
-  const { pollData, setPollId, userResponses, setUserResponses, setParticipant, setPageType } = useVote();
-
-  const navigate = useNavigate();
   const pollId = params.groupPollId || "";
+
+  const { pollData, setPollId, userResponses, setUserResponses, setParticipant, setPageType } = useVote();
+  const navigate = useNavigate();
   useEffect(() => {
     setPollId(pollId);
     setPageType("poll overview");
@@ -44,7 +44,7 @@ export default function ManageGroupPoll() {
   return (
     <div className="flex flex-col bg-white lg:flex-row">
       <div className=" relative w-full sm:px-0  lg:border lg:border-slate-300">
-        <div className="flex  flex-col justify-between lg:mx-8 lg:mt-8 ">
+        <div className="  flex flex-col justify-between lg:px-8 lg:pt-8">
           <div className="mx-4 mb-6 lg:mx-0">
             <ParticipationHeaders mainText={pollData.title} />
           </div>
@@ -77,7 +77,7 @@ export default function ManageGroupPoll() {
             <ResponseLegend column={false} extended={false} />
           </div>
 
-          <div className=" mb-2 ">
+          <div className=" mb-2">
             <PaginationWrapper
               slotList={pollData.slots}
               maxSlotsPerPage={maxSlotsPerPage}

@@ -28,8 +28,9 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 
 export default function ConfirmVoteGroupPoll() {
   async function voteHandler(values: onSubmitValue) {
+    const { email, username } = values;
     console.log("voteHandler", values);
-    const newParticipant = { name: values.username, email: values.email, responses: userResponses };
+    const newParticipant = { name: username, email: email, responses: userResponses };
     //update to firestore
     await uploadParticipantInfo(pollId, newParticipant);
     //replicate update locally
@@ -41,7 +42,7 @@ export default function ConfirmVoteGroupPoll() {
       console.log("newPollData", newPollData);
       return newPollData;
     });
-    setParticipant({ name: values.username, email: values.email });
+    setParticipant({ name: values.username, email: email });
     navigate(`/meeting/participate/id/${pollId}`);
   }
 
@@ -84,7 +85,7 @@ export default function ConfirmVoteGroupPoll() {
           subText={acceptedSlots.length == 0 ? "You have declined this event" : "You’re submitting the following times"}
         />
 
-        <div className="mb-2 lg:mb-0 ">
+        <div className={`mb-2 lg:mb-0 ${acceptedSlots.length == 0 ? "hidden" : ""}`}>
           <PaginationWrapper
             slotList={acceptedSlots}
             maxSlotsPerPage={maxSlotsPerPage}
@@ -100,9 +101,9 @@ export default function ConfirmVoteGroupPoll() {
         </Link>
         <Formik
           initialValues={{
-            username: pollData?.organiserName || "",
-            email: pollData?.organiserEmail || "",
-            title: pollData?.title || "",
+            username: "",
+            email: "",
+            title: "",
           }}
           validationSchema={DisplayingErrorMessagesSchema}
           onSubmit={(values: onSubmitValue) => {

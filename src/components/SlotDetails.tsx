@@ -16,6 +16,7 @@ export default function SlotDetails({
   variant?: string;
   mobileSimple?: boolean;
 }) {
+  if (!event.start.toDate) return "";
   const startDate = event.start.toDate();
   const endDate = event.end.toDate();
   const dateDetails = getDateDetails(startDate, endDate);

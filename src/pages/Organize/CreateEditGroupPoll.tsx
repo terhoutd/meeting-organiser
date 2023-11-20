@@ -124,15 +124,15 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
         organiserEmail: email,
         organiserName: username,
       });
-      setPollData((prevState) => {
-        if (!prevState) return;
-        const pd = { ...prevState };
-        pd.title = title;
-        pd.slots = events;
-        pd.organiserEmail = email;
-        pd.organiserName = username;
-        return pd;
-      });
+      // setPollData((prevState) => {
+      //   if (!prevState) return;
+      //   const pd = { ...prevState };
+      //   pd.title = title;
+      //   pd.slots = events;
+      //   pd.organiserEmail = email;
+      //   pd.organiserName = username;
+      //   return pd;
+      // });
 
       navigate("/meeting/organize/id/" + pollId);
     } catch (e) {

@@ -56,7 +56,7 @@ export default function ResponsesTable({
           // gap: " 10px",
           placeItems: "center",
         }}
-        className="hidden lg:grid  lg:overflow-y-auto"
+        className="hidden lg:grid  "
       >
         {displayedSlots.map((s) => {
           return (
@@ -70,12 +70,11 @@ export default function ResponsesTable({
           gridTemplateColumns: `228px 470px`,
           gridTemplateRows: `repeat(${sortedIncludedParticipants.length}, 48px)`,
           // height: "216px",
-          overflowY: "auto",
           gap: " 8px 0",
           // placeItems: "center",
           // paddingRight: "40px",
         }}
-        className="hidden lg:grid lg:h-[230px]"
+        className="hidden lg:grid lg:h-[221px] lg:overflow-y-scroll"
       >
         {sortedIncludedParticipants.map((participant) => (
           <React.Fragment key={participant.email}>

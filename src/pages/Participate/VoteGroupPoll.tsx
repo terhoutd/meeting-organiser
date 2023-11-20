@@ -45,12 +45,12 @@ export default function VoteGroupPoll() {
   const maxSlotsPerPage = 5;
 
   return (
-    <div className="flex  h-[700px] flex-col bg-white lg:flex-row">
+    <div className="flex h-[calc(100vh-69px)] flex-col overflow-y-scroll bg-white lg:h-[700px] lg:flex-row lg:overflow-visible ">
       <div className={" w-full border-b p-4 lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8"}>
         <MeetingOverview />
       </div>
-      <div className=" relative w-full sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
-        <div className="flex  flex-col	 justify-between lg:px-8 lg:pt-8">
+      <div className="relative w-full sm:px-0 lg:w-[750px] lg:border lg:border-slate-300">
+        <div className="flex  flex-col lg:px-8 lg:pt-8">
           <div className="mx-4">
             <ParticipationHeaders
               mainText="Select your preferred times"
@@ -69,7 +69,7 @@ export default function VoteGroupPoll() {
               showLegend={false}
               showTip={false}
             >
-              <VoteTable variant="vote" />
+              <VoteTable />
             </PaginationWrapper>
           </div>
         </div>

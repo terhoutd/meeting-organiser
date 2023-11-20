@@ -3,9 +3,11 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import usePollData from "../hooks/usePollData";
 import { db } from "../others/firebase";
 import { TimesResponse, Participant, PollData } from "../others/Types";
+import { useLocation } from "react-router-dom";
 
 import { getDoc, getDocs, collection } from "firebase/firestore";
 import { FsSlot, ParticipantFullInfo } from "../others/Types";
+import { fetchData } from "../others/helpers";
 
 const VoteContext = React.createContext({});
 export function useVote(): any {
@@ -13,6 +15,7 @@ export function useVote(): any {
 }
 
 export function VoteProvider({ children }: { children: ReactNode }) {
+  const location = useLocation();
   const [pollId, setPollId] = useState<string>();
   const [pageType, setPageType] = useState<string>();
   const [pollData, setPollData] = useState<PollData>();
@@ -34,31 +37,12 @@ export function VoteProvider({ children }: { children: ReactNode }) {
 
   //get the data synced with current pollid
   useEffect(() => {
-    async function fetchData() {
-      //generates a doc reference then uses it to obtain the actual doc
-      const pollDocRef = doc(db, "group polls", pollId);
-      const pollDocSnap = await getDoc(pollDocRef);
-      if (!pollDocSnap.exists()) {
-        console.log("No such document!");
-        return;
-      }
-      const pollDataSnap = pollDocSnap.data() as PollData;
-      console.log("Document data:", pollDataSnap);
-      //get all the docs in the participants collection and their data to our object
-      const votesDocsSnaps = await getDocs(collection(pollDocRef, "participants"));
-      pollDataSnap.participants = votesDocsSnaps.docs.map((v) => {
-        return v.data() as ParticipantFullInfo;
-      });
-      pollDataSnap.slots.sort((a, b) => {
-        if (a.start.toDate() < b.start.toDate()) return -1;
-        if (a.start.toDate() > b.start.toDate()) return 1;
-        return 0;
-      });
-      setPollData(pollDataSnap);
-    }
-    if (!pollId) return;
-    fetchData();
-  }, [pollId]);
+    console.log("location is", location);
+    if (!pollId || !location) return;
+    fetchData(pollId).then((data) => {
+      if (data) setPollData(data);
+    }); //TO DO need to handle errors
+  }, [pollId, location]);
 
   const value = {
     pollData,

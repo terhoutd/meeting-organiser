@@ -49,30 +49,16 @@ export default function OverviewVoteGroupPoll() {
   };
   return (
     <div className="flex h-full flex-col ">
-      <div className=" relative mb-5 w-full border border-slate-300 bg-white p-4 lg:p-8">
-        <div className="align-center flex">
-          <div className="mr-[10px]">
-            <CalendarAcceptIcon />
-          </div>
-          <h1 className="text-[18px]">Response submitted!</h1>
-        </div>
-        <div className="lg:text=[28px] my-[10px] text-[16px]">
-          Now it’s up to the organizer. We’ll email you at <b>{participant.email}</b> when they choose a final time.
-        </div>
-        <Button onClick={changeResponseHandler} variant="secondary">
-          Change your response
-        </Button>
-      </div>
       <div className=" relative w-full border border-slate-300 bg-white sm:px-0">
-        <div className="flex  flex-col	 justify-between lg:mt-8">
-          <div className="p-4 lg:px-8">
+        <div className="flex  flex-col	 justify-between   lg:px-8 lg:pt-8">
+          <div className="mx-4 lg:mx-0">
             <EventMetaData excludeParticipantCount={true} />
           </div>
-          <div className=" mx-4 mb-4 lg:hidden ">
+          <div className=" mx-4 mb-4 lg:mx-0 lg:hidden">
             <p className="mb-2 font-semibold">Availabilities</p>
             <ResponseLegend column={false} extended={false} />
           </div>
-          <div className="lg:pl-8 ">
+          <div className=" ">
             <div className="mb-2 hidden lg:block">Availabilities</div>
             <PaginationWrapper
               slotList={pollData.slots}
