@@ -18,7 +18,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { db } from "../../others/firebase";
 import { CalEvent, responseOption } from "../../others/Types";
-import { ROOT_DOC_NAME, YES_VOTE } from "../../others/Constants";
+import { COOKIE_NAME_PARTICIPANT_ID, ROOT_DOC_NAME, YES_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
 import { CloseSvg } from "../../assets/CloseSvg";
 import { m } from "framer-motion";
@@ -27,6 +27,7 @@ import { useVote } from "../../context/voteContext";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { CustomInput } from "../../components/CustomInput";
+import { useCookies } from "react-cookie";
 
 type onSubmitValue = {
   username: string;
@@ -77,7 +78,7 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const clickedDurationTabIndexRef = useRef<number>(defaultIndex);
   const previousDurationTabIndexRef = useRef<number>(defaultIndex);
-
+  const [cookies, setCookie] = useCookies([COOKIE_NAME_PARTICIPANT_ID]);
   const DisplayingErrorMessagesSchema = Yup.object().shape({
     username: Yup.string()
       .min(2, "Too Short!")
@@ -152,13 +153,13 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
       });
       console.log("Document written with ID: ", docRef.id);
       const pollId = docRef.id;
-      uploadParticipantInfo(pollId, {
+      const participantId = await uploadParticipantInfo(pollId, {
         isOrganiser: true,
         name: username,
         email: email,
         responses: defaultResponses,
       });
-
+      setCookie(COOKIE_NAME_PARTICIPANT_ID, participantId, { path: "/" });
       navigate("/meeting/organize/id/" + pollId);
     } catch (e) {
       console.error("Error adding document: ", e);

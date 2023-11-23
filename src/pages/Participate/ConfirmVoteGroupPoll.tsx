@@ -8,9 +8,9 @@ import PaginationWrapper, { PaginationContext } from "../../components/Paginatio
 import ParticipationHeaders from "../../components/ParticipationHeader";
 
 import { useVote } from "../../context/voteContext";
-import { NO_VOTE } from "../../others/Constants";
+import { COOKIE_NAME_PARTICIPANT_ID, NO_VOTE } from "../../others/Constants";
 import { uploadParticipantInfo } from "../../others/helpers";
-import { FsSlot, onSubmitValue, PollData } from "../../others/Types";
+import { FsSlot, onSubmitValue, ParticipantFullInfo, PollData } from "../../others/Types";
 
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -27,33 +27,24 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 });
 
 export default function ConfirmVoteGroupPoll() {
-  async function voteHandler(values: onSubmitValue) {
-    const { email, username } = values;
-    console.log("voteHandler", values);
-    const newParticipant = { name: username, email: email, responses: userResponses };
-    //update to firestore
-    await uploadParticipantInfo(pollId, newParticipant);
-    //replicate update locally
-    setPollData((pd: PollData) => {
-      const newPollData = { ...pd };
-      const currentParticipant = newPollData.participants.find((p) => p.email === email);
-      if (currentParticipant) currentParticipant.responses = userResponses;
-      else newPollData.participants.push(newParticipant);
-      console.log("newPollData", newPollData);
-      return newPollData;
-    });
-    setParticipant({ name: values.username, email: email });
-    navigate(`/meeting/participate/id/${pollId}`);
-  }
-
   let params = useParams();
   const pollId = params.groupPollId || "";
   const navigate = useNavigate();
 
-  const { pollData, setPollData, setPollId, userResponses, participant, setParticipant, setPageType, pageType } =
-    useVote();
+  const {
+    pollData,
+    setPollData,
+    setPollId,
+    userResponses,
+    participant,
+    setParticipant,
+    setPageType,
+    pageType,
+    participantId,
+    setParticipantIdCookie,
+  } = useVote();
   console.log("confirm", pollData, userResponses);
-
+  console.log("setParticipantIdCookie", setParticipantIdCookie);
   useEffect(() => {
     setPageType("vote confirm");
   }, []);
@@ -72,7 +63,27 @@ export default function ConfirmVoteGroupPoll() {
       return { ...r, slot: pollData.slots.find((s) => s.id == r.id) };
     });
   const maxSlotsPerPage = 7;
+  async function voteHandler(values: onSubmitValue) {
+    const { email, username } = values;
+    console.log("voteHandler", values);
+    const newParticipant = { name: username, email: email, responses: userResponses } as ParticipantFullInfo;
+    //update to firestore
+    const participantIdValue = (await uploadParticipantInfo(pollId, newParticipant, participantId)) as string;
+    console.log("participantIdValue", participantIdValue);
+    setParticipantIdCookie(COOKIE_NAME_PARTICIPANT_ID, participantIdValue);
+    //setParticipant({ name: values.username, email: email });
+    // //replicate update locally
+    // setPollData((pd: PollData) => {
+    //   const newPollData = { ...pd };
+    //   const currentParticipant = newPollData.participants.find((p) => p.email === email);
+    //   if (currentParticipant) currentParticipant.responses = userResponses;
+    //   else newPollData.participants.push(newParticipant);
+    //   console.log("newPollData", newPollData);
+    //   return newPollData;
+    // });
 
+    navigate(`/meeting/participate/id/${pollId}`);
+  }
   return (
     <div className="flex h-[700px] flex-col bg-white lg:flex-row">
       <div className={" w-full p-4 lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8"}>

@@ -5,15 +5,16 @@ import { ParticipantFullInfo, TimesResponse } from "./Types";
 import moment from "moment";
 import { ROOT_DOC_NAME } from "./Constants";
 
-export async function uploadParticipantInfo(pollId: string, participant: ParticipantFullInfo, participantId: string) {
+export async function uploadParticipantInfo(pollId: string, participant: ParticipantFullInfo, participantId?: string) {
   console.log("hi2 from helper");
   try {
     const pollDocRef = doc(db, ROOT_DOC_NAME, pollId);
     if (participantId) {
-      const participantId = await addDoc(collection(pollDocRef, "participants"), participant);
-      //set cookie wiht id here TODO
+      const participantRef = await addDoc(collection(pollDocRef, "participants"), participant);
+      return participantRef.id;
     } else {
       await setDoc(doc(pollDocRef, "participants", participant.email), participant);
+      return participantId;
     }
   } catch (e) {
     console.error("Error setting document: ", e);
@@ -33,7 +34,7 @@ export async function fetchData(pollId: string) {
   //get all the docs in the participants collection and their data to our object
   const votesDocsSnaps = await getDocs(collection(pollDocRef, "participants"));
   pollDataSnap.participants = votesDocsSnaps.docs.map((v) => {
-    return v.data() as ParticipantFullInfo;
+    return { id: v.id, ...v.data() } as ParticipantFullInfo;
   });
   pollDataSnap.slots.sort((a, b) => {
     if (a.start.toDate() < b.start.toDate()) return -1;

@@ -22,4 +22,5 @@ export interface Participant {
 }
 export interface ParticipantFullInfo extends Participant {
   responses: TimesResponse[];
+  id: string;
 }
