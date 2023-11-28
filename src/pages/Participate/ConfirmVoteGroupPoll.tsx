@@ -40,7 +40,7 @@ export default function ConfirmVoteGroupPoll() {
     setParticipant,
     setPageType,
     pageType,
-    participantId,
+    participantIdFromCookie,
     setParticipantIdCookie,
   } = useVote();
   console.log("confirm", pollData, userResponses);
@@ -66,9 +66,17 @@ export default function ConfirmVoteGroupPoll() {
   async function voteHandler(values: onSubmitValue) {
     const { email, username } = values;
     console.log("voteHandler", values);
-    const newParticipant = { name: username, email: email, responses: userResponses } as ParticipantFullInfo;
+    const newParticipant = {
+      name: username,
+      email: email,
+      responses: userResponses,
+    } as ParticipantFullInfo;
     //update to firestore
-    const participantIdValue = (await uploadParticipantInfo(pollId, newParticipant, participantId)) as string;
+    const participantIdValue = (await uploadParticipantInfo(
+      pollId,
+      newParticipant,
+      participantId
+    )) as string;
     console.log("participantIdValue", participantIdValue);
     setParticipantIdCookie(COOKIE_NAME_PARTICIPANT_ID, participantIdValue);
     //setParticipant({ name: values.username, email: email });
@@ -86,14 +94,20 @@ export default function ConfirmVoteGroupPoll() {
   }
   return (
     <div className="flex h-[700px] flex-col bg-white lg:flex-row">
-      <div className={" w-full p-4 lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8"}>
+      <div
+        className={" w-full p-4 lg:w-[250px] lg:border lg:border-r-0 lg:border-slate-300 lg:p-8"}
+      >
         <MeetingOverview variant={pageType} />
       </div>
 
       <div className=" flex w-[100vw]  flex-col border-t border-slate-300 px-4 lg:w-[750px] lg:border lg:border-slate-300 lg:px-8  lg:pt-8">
         <ParticipationHeaders
           mainText="Let’s confirm your selection"
-          subText={acceptedSlots.length == 0 ? "You have declined this event" : "You’re submitting the following times"}
+          subText={
+            acceptedSlots.length == 0
+              ? "You have declined this event"
+              : "You’re submitting the following times"
+          }
         />
 
         <div className={`mb-2 lg:mb-0 ${acceptedSlots.length == 0 ? "hidden" : ""}`}>
@@ -107,7 +121,10 @@ export default function ConfirmVoteGroupPoll() {
           </PaginationWrapper>
         </div>
 
-        <Link className="mt-2 font-medium	text-blue-600" to={`/meeting/participate/id/${pollId}/vote/`}>
+        <Link
+          className="mt-2 font-medium	text-blue-600"
+          to={`/meeting/participate/id/${pollId}/vote/`}
+        >
           Change
         </Link>
         <Formik
@@ -142,10 +159,16 @@ export default function ConfirmVoteGroupPoll() {
                     <label className="block" htmlFor="email">
                       Your email
                     </label>
-                    <Field name="email" component={CustomInput} placeholder="e.g. john.doe@email.com" />
+                    <Field
+                      name="email"
+                      component={CustomInput}
+                      placeholder="e.g. john.doe@email.com"
+                    />
                     {/* If this field has been touched, and it contains an error, display
            it */}
-                    {touched.email && errors.email && <div className="mt-2 text-red-500">{errors.email as string}</div>}
+                    {touched.email && errors.email && (
+                      <div className="mt-2 text-red-500">{errors.email as string}</div>
+                    )}
                   </div>
                 </>
               )}
@@ -194,7 +217,11 @@ function SelectedSlots() {
 
           return (
             <MotionDiv key={slotData.id}>
-              <SelectedSlot key={slotData.id.toString()} event={slotData} response={responseData.response} />
+              <SelectedSlot
+                key={slotData.id.toString()}
+                event={slotData}
+                response={responseData.response}
+              />
             </MotionDiv>
           );
         })}

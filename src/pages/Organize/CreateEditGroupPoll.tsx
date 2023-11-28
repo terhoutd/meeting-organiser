@@ -145,11 +145,13 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
       const defaultResponses = events.map((ev) => {
         return { id: ev.id, response: YES_VOTE as responseOption };
       });
+      const organiserAuthToken = uuidv4();
       const docRef = await addDoc(collection(db, ROOT_DOC_NAME), {
         title: title,
         slots: events,
         organiserEmail: email,
         organiserName: username,
+        organiserAuthToken,
       });
       console.log("Document written with ID: ", docRef.id);
       const pollId = docRef.id;
@@ -160,7 +162,7 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
         responses: defaultResponses,
       });
       setCookie(COOKIE_NAME_PARTICIPANT_ID, participantId, { path: "/" });
-      navigate("/meeting/organize/id/" + pollId);
+      navigate(`/meeting/organize/id/${pollId}?authToken=${organiserAuthToken}`);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -186,7 +188,8 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
 
       const eventAlreadyExists = !!events.find(
         (loopedEv) =>
-          moment(loopedEv.start).isSame(composedEvent.start) && moment(loopedEv.end).isSame(composedEvent.end)
+          moment(loopedEv.start).isSame(composedEvent.start) &&
+          moment(loopedEv.end).isSame(composedEvent.end)
       );
       if (eventAlreadyExists) return;
 
@@ -198,18 +201,21 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
     [events, duration]
   );
 
-  const onEventDrop = useCallback(({ start, end, event }: { start: Date; end: Date; event: CalEvent }) => {
-    console.log(start, end, event);
-    setEvents((prev) => {
-      // const newEv = { start, end, title, id };
-      const newEvents = [...prev];
-      const foundEv = newEvents.find((ev) => ev.id === event.id);
-      if (!foundEv) return newEvents; //this should not happen
-      foundEv.start = start;
-      foundEv.end = end;
-      return newEvents;
-    });
-  }, []);
+  const onEventDrop = useCallback(
+    ({ start, end, event }: { start: Date; end: Date; event: CalEvent }) => {
+      console.log(start, end, event);
+      setEvents((prev) => {
+        // const newEv = { start, end, title, id };
+        const newEvents = [...prev];
+        const foundEv = newEvents.find((ev) => ev.id === event.id);
+        if (!foundEv) return newEvents; //this should not happen
+        foundEv.start = start;
+        foundEv.end = end;
+        return newEvents;
+      });
+    },
+    []
+  );
 
   if (loading) return <div>Loading...</div>;
 
@@ -250,10 +256,16 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
                   <label className="block" htmlFor="email">
                     Your email
                   </label>
-                  <Field name="email" component={CustomInput} placeholder="e.g. john.doe@email.com" />
+                  <Field
+                    name="email"
+                    component={CustomInput}
+                    placeholder="e.g. john.doe@email.com"
+                  />
                   {/* If this field has been touched, and it contains an error, display
            it */}
-                  {touched.email && errors.email && <div className="mt-2 text-red-500">{errors.email as string}</div>}
+                  {touched.email && errors.email && (
+                    <div className="mt-2 text-red-500">{errors.email as string}</div>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block" htmlFor="title">
@@ -262,7 +274,9 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
                   <Field name="title" component={CustomInput} placeholder="my meeting" />
                   {/* If this field has been touched, and it contains an error, display
            it */}
-                  {touched.title && errors.title && <div className="mt-2 text-red-500">{errors.title as string}</div>}
+                  {touched.title && errors.title && (
+                    <div className="mt-2 text-red-500">{errors.title as string}</div>
+                  )}
                 </div>
                 <div className="fixed right-0 bottom-0 z-10 flex  w-full  justify-center border-t border-zinc-400 bg-white">
                   <div className="flex w-full max-w-[1000px] items-center justify-between px-8">
@@ -283,7 +297,9 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
                       <input
                         type="submit"
                         className=" my-4 bg-blue-600 p-3 text-white"
-                        value={isEdit ? "Save" : isDesktop ? "Create invite and continue" : "Continue"}
+                        value={
+                          isEdit ? "Save" : isDesktop ? "Create invite and continue" : "Continue"
+                        }
                       />
                     </div>
                   </div>
@@ -401,7 +417,9 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
     const showStartAm = momentStart.format("a") !== momentEnd.format("a");
     const showStartMinutes = momentStart.format("mm") !== "00";
     const showEndMinutes = momentEnd.format("mm") !== "00";
-    const displayStart = momentStart.format("h" + (showStartMinutes ? ":mm" : "") + (showStartAm ? " A" : ""));
+    const displayStart = momentStart.format(
+      "h" + (showStartMinutes ? ":mm" : "") + (showStartAm ? " A" : "")
+    );
     const displayEnd = momentEnd.format("h" + (showEndMinutes ? ":mm" : "") + " A");
     const title = displayStart + "-" + displayEnd;
     const id = uuidv4();
@@ -442,10 +460,12 @@ function SwitchDurationDialog({
 
       <div className="fixed inset-0 z-10 flex items-center justify-center p-6">
         <Dialog.Panel className="w-full max-w-xl rounded bg-white p-4 lg:p-8">
-          <Dialog.Title className={"mb-5 text-3xl"}>Change the duration of the meeting</Dialog.Title>
+          <Dialog.Title className={"mb-5 text-3xl"}>
+            Change the duration of the meeting
+          </Dialog.Title>
           <Dialog.Description className={"text-md text-zinc-600"}>
-            Both all-day and time-specific options are not supported in the same meeting, please choose one type of
-            option:
+            Both all-day and time-specific options are not supported in the same meeting, please
+            choose one type of option:
           </Dialog.Description>
           <div className="mt-4 flex flex-col justify-center gap-4 lg:mt-16 lg:flex-row">
             <Button

@@ -4,7 +4,7 @@ import { IFNEEDBE_VOTE, NO_VOTE, YES_VOTE } from "./Constants";
 export type CalEvent = { start: Date; end: Date; title: string; id: string };
 export type FsSlot = { start: Timestamp; end: Timestamp; title: string; id: number };
 export type TimesResponse = {
-  id: number;
+  id: string;
   response: responseOption;
 };
 export type responseOption = typeof YES_VOTE | typeof NO_VOTE | typeof IFNEEDBE_VOTE;

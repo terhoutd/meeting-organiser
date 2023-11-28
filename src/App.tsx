@@ -7,6 +7,7 @@ import ConfirmVoteGroupPoll from "./pages/Participate/ConfirmVoteGroupPoll";
 import OverviewVoteGroupPoll from "./pages/Participate/OverviewVoteGroupPoll";
 import { VoteProvider } from "./context/voteContext";
 import { CreateEditGroupPoll } from "./pages/Organize/CreateEditGroupPoll";
+import { ParticipateRoute } from "./pages/Participate/ParticipateRoute";
 
 export default function App() {
   //return <CreateGroupPoll />;
@@ -15,12 +16,20 @@ export default function App() {
       <VoteProvider>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/meeting/organize/groups" element={<CreateEditGroupPoll variant="create" />} />
+          <Route
+            path="/meeting/organize/groups"
+            element={<CreateEditGroupPoll variant="create" />}
+          />
           <Route path="/meeting/organize/id/:groupPollId" element={<ManageGroupPoll />} />
-          <Route path="/meeting/organize/id/:groupPollId/edit" element={<CreateEditGroupPoll variant="edit" />} />
-          <Route path="/meeting/participate/id/:groupPollId/vote" element={<VoteGroupPoll />} />
-          <Route path="/meeting/participate/id/:groupPollId/vote/confirm" element={<ConfirmVoteGroupPoll />} />
-          <Route path="/meeting/participate/id/:groupPollId" element={<OverviewVoteGroupPoll />} />
+          <Route
+            path="/meeting/organize/id/:groupPollId/edit"
+            element={<CreateEditGroupPoll variant="edit" />}
+          />
+          <Route path="/meeting/participate/id/:groupPollId" element={<ParticipateRoute />}>
+            <Route path="vote" element={<VoteGroupPoll />} />
+            <Route path="vote/confirm" element={<ConfirmVoteGroupPoll />} />
+            <Route index element={<OverviewVoteGroupPoll />} />
+          </Route>
         </Routes>
       </VoteProvider>
     </Router>

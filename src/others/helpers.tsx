@@ -5,7 +5,11 @@ import { ParticipantFullInfo, TimesResponse } from "./Types";
 import moment from "moment";
 import { ROOT_DOC_NAME } from "./Constants";
 
-export async function uploadParticipantInfo(pollId: string, participant: ParticipantFullInfo, participantId?: string) {
+export async function uploadParticipantInfo(
+  pollId: string,
+  participant: ParticipantFullInfo,
+  participantId?: string
+) {
   console.log("hi2 from helper");
   try {
     const pollDocRef = doc(db, ROOT_DOC_NAME, pollId);

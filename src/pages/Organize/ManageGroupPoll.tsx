@@ -9,12 +9,15 @@ import ResponseLegend from "../../components/ResponseLegend";
 import ParticipationHeaders from "../../components/ParticipationHeader";
 import PaginationWrapper from "../../components/PaginationWrapper";
 import { VoteTable } from "../../components/VoteTable";
+import { Message } from "../../components/Message";
 
 export default function ManageGroupPoll() {
   let params = useParams();
   const pollId = params.groupPollId || "";
+  const [isMessageOpen, setIsMessageOpen] = useState(false);
 
-  const { pollData, setPollId, userResponses, setUserResponses, setParticipant, setPageType } = useVote();
+  const { pollData, setPollId, userResponses, setUserResponses, setParticipant, setPageType } =
+    useVote();
   const navigate = useNavigate();
   useEffect(() => {
     setPollId(pollId);
@@ -43,6 +46,16 @@ export default function ManageGroupPoll() {
 
   return (
     <div className="flex flex-col bg-white lg:flex-row">
+      <Message
+        isOpen={isMessageOpen}
+        onClose={function (): void {
+          setIsMessageOpen(false);
+        }}
+        backgroundColor="bg-green-700"
+        description="Invite link copied!"
+        autoFade={true}
+      />
+
       <div className=" relative w-full sm:px-0  lg:border lg:border-slate-300">
         <div className="  flex flex-col justify-between lg:px-8 lg:pt-8">
           <div className="mx-4 mb-6 lg:mx-0">
@@ -66,6 +79,7 @@ export default function ManageGroupPoll() {
                   navigator.clipboard.writeText(
                     `${location.protocol}//${location.host}/meeting/participate/id/${pollId}/vote`
                   );
+                  setIsMessageOpen(true);
                 }}
               >
                 Copy link

@@ -7,8 +7,13 @@ import PlanetSvg from "../assets/PlanetSvg";
 import SmallArrowSvg from "../assets/SmallArrowSvg";
 import { useVote } from "../context/voteContext";
 import ParticipantNameLabel from "./ParticipantNameLabel";
+import { Participant } from "../others/Types";
 
-export default function EventMetaData({ excludeParticipantCount }: { excludeParticipantCount?: boolean }) {
+export default function EventMetaData({
+  excludeParticipantCount,
+}: {
+  excludeParticipantCount?: boolean;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { pollData, invitedParticipants, organizerParticipant } = useVote();
   console.log("pollData", pollData);
@@ -28,7 +33,7 @@ export default function EventMetaData({ excludeParticipantCount }: { excludePart
         <SmallArrowSvg orientation={isExpanded ? "up" : "down"} />
       </button>
       <div className="mb-2 lg:mb-2 ">
-        <ParticipantNameLabel participant={organizerParticipant} />
+        <ParticipantNameLabel participant={organizerParticipant as Participant} />
       </div>
       <div className={` mb-2  text-lg font-medium lg:mb-2`}>{pollData.title}</div>
       <div className="mb-2  flex items-center gap-3  lg:mb-2">
@@ -39,11 +44,15 @@ export default function EventMetaData({ excludeParticipantCount }: { excludePart
         <PinSvg />
         <span>bla</span>
       </div>
-      <div className={`${isExpanded ? "flex" : "hidden"} mb-2  items-center  gap-3 lg:mb-2 lg:flex`}>
+      <div
+        className={`${isExpanded ? "flex" : "hidden"} mb-2  items-center  gap-3 lg:mb-2 lg:flex`}
+      >
         <PlanetSvg />
         <span>uk</span>
       </div>
-      <div className={`${isExpanded ? "flex" : "hidden"} mb-2  items-center  gap-3 lg:mb-2 lg:flex`}>
+      <div
+        className={`${isExpanded ? "flex" : "hidden"} mb-2  items-center  gap-3 lg:mb-2 lg:flex`}
+      >
         <DescSvg />
         <span>description</span>
       </div>
