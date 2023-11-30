@@ -69,7 +69,7 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
   const navigate = useNavigate();
 
   const pollId = isEdit ? params.groupPollId : "";
-  const { pollData, isDesktop, setPollId, setPageType, setPollData } = useVote();
+  const { pollData, isDesktop, setPollId, setPageType, setPollData, setIsPollCreated } = useVote();
 
   const [loading, setLoading] = useState(isEdit);
   const [events, setEvents] = useState<CalEvent[]>([]);
@@ -162,6 +162,7 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
         responses: defaultResponses,
       });
       setCookie(COOKIE_NAME_PARTICIPANT_ID, participantId, { path: "/" });
+      setIsPollCreated(true);
       navigate(`/meeting/organize/id/${pollId}?authToken=${organiserAuthToken}`);
     } catch (e) {
       console.error("Error adding document: ", e);

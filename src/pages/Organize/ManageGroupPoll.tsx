@@ -10,14 +10,24 @@ import ParticipationHeaders from "../../components/ParticipationHeader";
 import PaginationWrapper from "../../components/PaginationWrapper";
 import { VoteTable } from "../../components/VoteTable";
 import { Message } from "../../components/Message";
+import { CloseSvg } from "../../assets/CloseSvg";
 
 export default function ManageGroupPoll() {
   let params = useParams();
   const pollId = params.groupPollId || "";
-  const [isMessageOpen, setIsMessageOpen] = useState(false);
+  const [isCopyLinkMessageOpen, setIsCopyLinkMessageOpen] = useState(false);
 
-  const { pollData, setPollId, userResponses, setUserResponses, setParticipant, setPageType } =
-    useVote();
+  const {
+    pollData,
+    setPollId,
+    userResponses,
+    setUserResponses,
+    setParticipant,
+    setPageType,
+    isPollCreated,
+    setIsPollCreated,
+  } = useVote();
+
   const navigate = useNavigate();
   useEffect(() => {
     setPollId(pollId);
@@ -26,6 +36,12 @@ export default function ManageGroupPoll() {
 
   const pollDataAvailable = !!pollData;
   const urlConfirmPage = `/meeting/organize/id/${pollId}/edit`;
+
+  // useEffect(() => {
+  //   if (isPollCreated)
+
+  // }, [isPollCreated]);
+
   useEffect(() => {
     console.log("usef1", pollDataAvailable, userResponses, pollData);
     if (!pollDataAvailable) return;
@@ -35,7 +51,9 @@ export default function ManageGroupPoll() {
     setParticipant(curParticipant);
     setUserResponses(curParticipant.responses);
   }, [pollDataAvailable]);
-
+  useEffect(() => {
+    console.log("isPollCreated", isPollCreated);
+  }, [isPollCreated]);
   if (!pollData || !userResponses) return <span>no data yet</span>;
 
   const isAllDeclined = userResponses.every((r) => {
@@ -46,16 +64,40 @@ export default function ManageGroupPoll() {
 
   return (
     <div className="flex flex-col bg-white lg:flex-row">
-      <Message
-        isOpen={isMessageOpen}
+      <dialog
+        open={isCopyLinkMessageOpen ? true : undefined}
+        className={`fixed top-8 z-10 bg-green-700 p-4 text-white transition-opacity duration-500`}
+      >
+        Invite link copied!
+      </dialog>
+
+      <dialog
+        open={isPollCreated ? true : undefined}
+        className={`fixed top-8 z-10 bg-blue-400 px-8 py-4 text-white transition-opacity
+        duration-500`}
+      >
+        <div className=" flex items-center gap-4">
+          <span>You have successfully created your poll! Now, time to send out invites.</span>
+          <div
+            className="flex h-5 w-5 cursor-pointer items-center justify-center"
+            onClick={() => {
+              console.log("close");
+              setIsPollCreated(false);
+            }}
+          >
+            <CloseSvg />
+          </div>
+        </div>
+      </dialog>
+      {/* <Message
+        isOpen={isCopyLinkMessageOpen}
         onClose={function (): void {
-          setIsMessageOpen(false);
+          setIsCopyLinkMessageOpen(false);
         }}
         backgroundColor="bg-green-700"
-        description="Invite link copied!"
+        description="You have successfully created your poll! Now, time to send out invites."
         autoFade={true}
-      />
-
+      /> */}
       <div className=" relative w-full sm:px-0  lg:border lg:border-slate-300">
         <div className="  flex flex-col justify-between lg:px-8 lg:pt-8">
           <div className="mx-4 mb-6 lg:mx-0">
@@ -79,7 +121,10 @@ export default function ManageGroupPoll() {
                   navigator.clipboard.writeText(
                     `${location.protocol}//${location.host}/meeting/participate/id/${pollId}/vote`
                   );
-                  setIsMessageOpen(true);
+                  setIsCopyLinkMessageOpen(true);
+                  setTimeout(() => {
+                    setIsCopyLinkMessageOpen(false);
+                  }, 5000);
                 }}
               >
                 Copy link

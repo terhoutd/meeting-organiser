@@ -25,6 +25,8 @@ type VoteContextType = {
   setPageType: (pageType: string) => void;
   setParticipantIdCookie: (name: string, value: string, options?: any) => void;
   participantIdFromCookie?: string;
+  isPollCreated: boolean;
+  setIsPollCreated: (x: boolean) => void;
 };
 const VoteContext = React.createContext<VoteContextType | undefined>(undefined);
 export function useVote(): VoteContextType {
@@ -45,6 +47,7 @@ export function VoteProvider({ children }: { children: ReactNode }) {
   const [sizeMode, setSizeMode] = useState<"desktop" | "mobile">(
     window.innerWidth >= 1024 ? "desktop" : "mobile"
   );
+  const [isPollCreated, setIsPollCreated] = useState(false);
   const isDesktop = sizeMode === "desktop";
   const invitedParticipants = pollData?.participants.filter((p) => !p.isOrganiser);
   const organizerParticipant = pollData?.participants.find((p) => p.isOrganiser);
@@ -92,6 +95,8 @@ export function VoteProvider({ children }: { children: ReactNode }) {
     setPageType,
     setParticipantIdCookie: setCookie,
     participantIdFromCookie,
+    isPollCreated,
+    setIsPollCreated,
   };
   return <VoteContext.Provider value={value}>{children} </VoteContext.Provider>;
 }
