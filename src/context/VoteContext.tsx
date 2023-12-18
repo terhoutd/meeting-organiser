@@ -18,15 +18,18 @@ type VoteContextType = {
   setUserResponses: (responses: TimesResponse[]) => void;
   participant?: Participant;
   setParticipant: (participant: Participant) => void;
+  pageType?: string;
+  setPageType: (pageType: string) => void;
+  participantIdFromCookie?: string;
+  setParticipantIdCookie: (name: string, value: string, options?: any) => void;
+  isPollCreated: boolean;
+  setIsPollCreated: (x: boolean) => void;
+  isVoting: boolean;
+  setIsVoting: (x: boolean) => void;
   invitedParticipants?: Participant[];
   organizerParticipant?: Participant;
   isDesktop: boolean;
-  pageType?: string;
-  setPageType: (pageType: string) => void;
-  setParticipantIdCookie: (name: string, value: string, options?: any) => void;
-  participantIdFromCookie?: string;
-  isPollCreated: boolean;
-  setIsPollCreated: (x: boolean) => void;
+  isPageReadOnly: boolean;
 };
 const VoteContext = React.createContext<VoteContextType | undefined>(undefined);
 export function useVote(): VoteContextType {
@@ -53,6 +56,10 @@ export function VoteProvider({ children }: { children: ReactNode }) {
   const organizerParticipant = pollData?.participants.find((p) => p.isOrganiser);
   const [cookies, setCookie] = useCookies([COOKIE_NAME_PARTICIPANT_ID]);
   const participantIdFromCookie = cookies[COOKIE_NAME_PARTICIPANT_ID];
+  const [isVoting, setIsVoting] = useState(false);
+
+  const isPageReadOnly = ["vote overview", "poll overview"].includes(pageType);
+
   console.log("setCookie", setCookie);
   useEffect(() => {
     function handleResize() {
@@ -88,15 +95,18 @@ export function VoteProvider({ children }: { children: ReactNode }) {
     setUserResponses,
     participant,
     setParticipant,
+    pageType,
+    setPageType,
+    participantIdFromCookie,
+    setParticipantIdCookie: setCookie,
+    isPollCreated,
+    setIsPollCreated,
+    isVoting,
+    setIsVoting,
     invitedParticipants,
     organizerParticipant,
     isDesktop,
-    pageType,
-    setPageType,
-    setParticipantIdCookie: setCookie,
-    participantIdFromCookie,
-    isPollCreated,
-    setIsPollCreated,
+    isPageReadOnly,
   };
   return <VoteContext.Provider value={value}>{children} </VoteContext.Provider>;
 }

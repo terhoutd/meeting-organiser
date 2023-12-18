@@ -15,9 +15,10 @@ import ResponseLegend from "../../components/ResponseLegend";
 
 export default function OverviewVoteGroupPoll() {
   let params = useParams();
-  const { test, pollData, setPollId, userResponses, setUserResponses, participant, setPageType } = useVote();
-  console.log(test);
-  console.log("VoteGroupPoll rendering");
+  const { pollData, setPollId, userResponses, setUserResponses, participant, setPageType } =
+    useVote();
+
+  console.log("OverviewVoteGroupPoll rendering");
   console.log("pollData", pollData);
 
   console.log("responses", userResponses);
@@ -51,7 +52,7 @@ export default function OverviewVoteGroupPoll() {
     <div className="flex h-full flex-col ">
       <div className=" relative w-full border border-slate-300 bg-white sm:px-0">
         <div className="flex  flex-col	 justify-between   lg:px-8 lg:pt-8">
-          <div className="mx-4 lg:mx-0">
+          <div className="mx-4 mt-4 lg:mx-0 lg:mt-0">
             <EventMetaData excludeParticipantCount={true} />
           </div>
           <div className=" mx-4 mb-4 lg:mx-0 lg:hidden">
@@ -67,7 +68,7 @@ export default function OverviewVoteGroupPoll() {
               showTip={false}
             >
               <div className="mr-[70px] flex justify-end lg:hidden">Your response</div>
-              <VoteTable />
+              <VoteTable className="my-4 lg:-mr-8" />
             </PaginationWrapper>
           </div>
         </div>

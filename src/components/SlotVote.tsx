@@ -9,7 +9,15 @@ import SlotYesCount from "./SlotYesCount";
 import { useVote } from "../context/voteContext";
 import NoTickSvg from "../assets/noTickSvg";
 
-export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: string; setVote: any }) {
+export default function SlotVote({
+  slot,
+  vote,
+  setVote,
+}: {
+  slot: FsSlot;
+  vote: string;
+  setVote: any;
+}) {
   function handleClick() {
     let newVote = NO_VOTE;
     if (isNoVote) newVote = YES_VOTE;
@@ -19,7 +27,7 @@ export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: 
     console.log("click");
   }
 
-  const { pollData, pageType } = useVote();
+  const { isPageReadOnly, pollData, pageType } = useVote();
   const canVote = pageType == "vote";
 
   const isNoVote = vote === NO_VOTE;
@@ -27,7 +35,7 @@ export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: 
   const isIfneedbeVote = vote === IFNEEDBE_VOTE;
   return (
     <label
-      onClick={pageType == "vote overview" ? () => {} : handleClick}
+      onClick={isPageReadOnly ? () => {} : handleClick}
       className={clsx(
         "flex cursor-pointer	items-center justify-between  border-b border-slate-300 p-4 lg:flex-col lg:justify-evenly lg:border-0 lg:p-0 lg:pt-0",
         canVote && isNoVote && " hover:bg-gray-50",
@@ -46,12 +54,21 @@ export default function SlotVote({ slot, vote, setVote }: { slot: FsSlot; vote: 
         )}
 
         <div className="mr-2 lg:hidden ">
-          <SlotYesCount className="text-blue-800" key={slot.id} slotId={slot.id} participants={pollData.participants} />
+          <SlotYesCount
+            className="text-blue-800"
+            key={slot.id}
+            slotId={slot.id}
+            participants={pollData.participants}
+          />
         </div>
 
         {/* tickbox and its status */}
         {canVote && (
-          <div className={clsx("my-3 flex h-6 w-6 justify-center rounded border border-gray-500 bg-white")}>
+          <div
+            className={clsx(
+              "my-3 flex h-6 w-6 justify-center rounded border border-gray-500 bg-white"
+            )}
+          >
             {isYesVote && <YesTickSvg className="w-4 bg-white text-lime-500" />}
             {isIfneedbeVote && <IfNeedBeSvg className="w-4 bg-white" />}
           </div>

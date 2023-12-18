@@ -13,8 +13,7 @@ import { VoteTable } from "../../components/VoteTable";
 
 export default function VoteGroupPoll() {
   let params = useParams();
-  const { test, pollData, setPollId, userResponses, setUserResponses, participant, pageType, setPageType } = useVote();
-  console.log(test);
+  const { setIsVoting, pollData, setPollId, userResponses, setUserResponses, participant, pageType, setPageType } = useVote();
   console.log("VoteGroupPoll rendering");
   console.log("pollData", pollData);
 
@@ -92,9 +91,11 @@ export default function VoteGroupPoll() {
   }
   function declineHandler() {
     declineAllSlots(pollData);
+    setIsVoting(true)
     navigate(urlConfirmPage);
   }
   function continueHandler(e) {
+    setIsVoting(true)
     navigate(urlConfirmPage);
   }
 }

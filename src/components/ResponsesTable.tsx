@@ -28,7 +28,7 @@ export default function ResponsesTable({
   const displayedSlots = pollData.slots.filter((s) => displayedSlotsIds.includes(s.id));
 
   sortedIncludedParticipants.sort((a, b) => {
-    if (currentParticipantPosition == "top" && a.email === participant.email) return -1;
+    if (currentParticipantPosition == "top" && participant && a.email === participant.email) return -1;
     if (a.isOrganiser) return -1;
     const nameA = a.name.toUpperCase(); // ignore upper and lowercase
     const nameB = b.name.toUpperCase(); // ignore upper and lowercase

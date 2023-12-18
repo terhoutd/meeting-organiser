@@ -75,7 +75,7 @@ export default function ConfirmVoteGroupPoll() {
     const participantIdValue = (await uploadParticipantInfo(
       pollId,
       newParticipant,
-      participantId
+      participantIdFromCookie
     )) as string;
     console.log("participantIdValue", participantIdValue);
     setParticipantIdCookie(COOKIE_NAME_PARTICIPANT_ID, participantIdValue);
@@ -114,7 +114,7 @@ export default function ConfirmVoteGroupPoll() {
           <PaginationWrapper
             slotList={acceptedSlots}
             maxSlotsPerPage={maxSlotsPerPage}
-            showLegend={true}
+            showLegend={false}
             showTip={false}
           >
             <SelectedSlots />
@@ -129,9 +129,8 @@ export default function ConfirmVoteGroupPoll() {
         </Link>
         <Formik
           initialValues={{
-            username: "",
-            email: "",
-            title: "",
+            username: participant?.name ||"",
+            email: participant?.email || ""
           }}
           validationSchema={DisplayingErrorMessagesSchema}
           onSubmit={(values: onSubmitValue) => {
@@ -140,7 +139,7 @@ export default function ConfirmVoteGroupPoll() {
             voteHandler(values);
           }}
         >
-          {({ errors, touched, isValid, values }) => (
+          {({ errors, touched, isValid,   values }) => (
             <Form>
               {!participant && (
                 <>

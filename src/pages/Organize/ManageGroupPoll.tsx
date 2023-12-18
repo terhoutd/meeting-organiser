@@ -127,12 +127,12 @@ export default function ManageGroupPoll() {
                   }, 5000);
                 }}
               >
-                Copy link
+                Share invite
               </Button>
             </div>
           </div>
           <div className=" mx-4  justify-between lg:mx-0 lg:flex">
-            <p className="mb-6 font-semibold">Availabilities</p>
+            <p className="mb-6 font-bold">Availabilities</p>
             <ResponseLegend column={false} extended={false} />
           </div>
 
@@ -143,13 +143,14 @@ export default function ManageGroupPoll() {
               showLegend={false}
               showTip={false}
             >
-              <VoteTable variant="organiser overview" />
+              <VoteTable className="my-4 lg:-mr-8" />
             </PaginationWrapper>
           </div>
         </div>
       </div>
     </div>
   );
+  
   function declineAllSlots(pollData) {
     setUserResponses(
       pollData.slots.map((ev) => {

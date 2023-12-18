@@ -8,12 +8,18 @@ import ResponsesTable from "./ResponsesTable";
 import SlotDetails from "./SlotDetails";
 import SlotVote from "./SlotVote";
 
-export function VoteTable() {
-  const { test, pollData, setPollId, userResponses, setUserResponses, participant, isDesktop, pageType } = useVote();
-  const readOnly = ["vote overview", "poll overview"].includes(pageType);
-  const countIcon = readOnly ? "people" : "tick";
+export function VoteTable({ className = "" }: { className?: string }) {
+  const {
+    isPageReadOnly,
+    pollData,
+    setPollId,
+    userResponses,
+    setUserResponses,
+    participant,
+    pageType,
+  } = useVote();
+  const countIcon = isPageReadOnly ? "people" : "tick";
 
-  console.log("isDesktop", isDesktop);
   console.log(pollData);
   const { slotsShown } = useContext(PaginationContext);
   if (!slotsShown) return <span>no data yet</span>;
@@ -28,10 +34,13 @@ export function VoteTable() {
 '${" participants".repeat(slotsShown.length + 1)}'
 `,
       }}
-      className={`flex ${!readOnly ? "" : "my-4 lg:-mr-8"} flex-col lg:grid`}
+      className={`${className} flex flex-col lg:grid`}
     >
-      <div className="hidden h-full w-full flex-col justify-end lg:flex " style={{ gridArea: "top-left" }}>
-        {readOnly ? (
+      <div
+        className="hidden h-full w-full flex-col justify-end lg:flex "
+        style={{ gridArea: "top-left" }}
+      >
+        {isPageReadOnly ? (
           <div></div>
         ) : (
           <ParticipantNameLabel
@@ -77,7 +86,7 @@ export function VoteTable() {
       <ResponsesTable
         displayedSlotsIds={slotsShown}
         pollData={pollData}
-        currentParticipantPosition={readOnly ? "top" : "exclude"}
+        currentParticipantPosition={isPageReadOnly ? "top" : "exclude"}
         countIcon={countIcon}
       />
     </div>

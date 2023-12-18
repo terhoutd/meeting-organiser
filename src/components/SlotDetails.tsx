@@ -31,8 +31,15 @@ export default function SlotDetails({
             <div className="mx-auto uppercase text-gray-500">{dateDetails.month}</div>
           </div>
           <div className="flex shrink-0 flex-col justify-center">
-            <div className="mx-auto font-medium uppercase">{dateDetails.startTime}</div>
-            <div className=" mx-auto font-medium uppercase">{dateDetails.endTime}</div>
+            {!dateDetails.isAllDay && (
+              <>
+                <div className="mx-auto font-medium uppercase">{dateDetails.startTime}</div>
+                <div className=" mx-auto font-medium uppercase">{dateDetails.endTime}</div>
+              </>
+            )}
+            {dateDetails.isAllDay && (
+            <div className=" mx-auto font-medium">All day</div>)
+              }
           </div>
         </div>
       </div>

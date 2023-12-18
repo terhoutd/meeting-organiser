@@ -6,5 +6,5 @@ export function CustomInput({
   console.log("CustomInput field", field);
   console.log("CustomInput errors", errors);
 
-  return <input className=" block h-10 w-full border-2 px-4" type="text" {...props} {...field} />;
+  return <input className=" block h-10 w-full border-2 px-2" type="text" {...props} {...field} />;
 }

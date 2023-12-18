@@ -8,6 +8,7 @@ import SmallArrowSvg from "../assets/SmallArrowSvg";
 import { useVote } from "../context/voteContext";
 import ParticipantNameLabel from "./ParticipantNameLabel";
 import { Participant } from "../others/Types";
+import { durationsDetails } from "../others/helpers";
 
 export default function EventMetaData({
   excludeParticipantCount,
@@ -26,19 +27,27 @@ export default function EventMetaData({
   }
   return (
     <div className="relative flex flex-col">
-      <button
-        className={`absolute top-3 right-3 h-6 w-6 rounded-sm outline-blue-800 focus:outline lg:hidden`}
-        onClick={clickHandler}
-      >
-        <SmallArrowSvg orientation={isExpanded ? "up" : "down"} />
-      </button>
-      <div className="mb-2 lg:mb-2 ">
-        <ParticipantNameLabel participant={organizerParticipant as Participant} />
+      <div className="flex justify-between">
+        <div className="mb-2 lg:mb-2 ">
+          <ParticipantNameLabel participant={organizerParticipant as Participant} />
+        </div>
+        <button
+          className={`h-6 w-6 rounded-sm outline-blue-800 focus:outline lg:hidden`}
+          onClick={clickHandler}
+        >
+          <SmallArrowSvg orientation={isExpanded ? "up" : "down"} />
+        </button>
       </div>
       <div className={` mb-2  text-lg font-medium lg:mb-2`}>{pollData.title}</div>
       <div className="mb-2  flex items-center gap-3  lg:mb-2">
         <ClockSvg />
-        <span>30 minutes</span>
+        <span>
+          {
+            durationsDetails.find((x) => {
+              return x.duration == pollData.duration;
+            })?.title
+          }
+        </span>
       </div>
       <div className={`${isExpanded ? "flex" : "hidden"} mb-2 items-center gap-3 lg:mb-2 lg:flex`}>
         <PinSvg />

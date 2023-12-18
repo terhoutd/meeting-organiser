@@ -1,7 +1,7 @@
 import { addDoc, collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import React from "react";
 import { db } from "./firebase";
-import { ParticipantFullInfo, TimesResponse } from "./Types";
+import { DurationObject, ParticipantFullInfo, TimesResponse } from "./Types";
 import moment from "moment";
 import { ROOT_DOC_NAME } from "./Constants";
 
@@ -13,11 +13,11 @@ export async function uploadParticipantInfo(
   console.log("hi2 from helper");
   try {
     const pollDocRef = doc(db, ROOT_DOC_NAME, pollId);
-    if (participantId) {
+    if (!participantId) {
       const participantRef = await addDoc(collection(pollDocRef, "participants"), participant);
       return participantRef.id;
     } else {
-      await setDoc(doc(pollDocRef, "participants", participant.email), participant);
+      await setDoc(doc(pollDocRef, "participants", participantId), participant, { merge: true });
       return participantId;
     }
   } catch (e) {
@@ -47,12 +47,41 @@ export async function fetchData(pollId: string) {
   });
   return pollDataSnap;
 }
-export function getDateDetails(startDate, endDate) {
-  return {
+export function getDateDetails(startDate: Date, endDate: Date) {
+  const obj = {
     day: moment(startDate).format("ddd"),
     date: startDate.getDate(),
     month: moment(startDate).format("MMM"),
     startTime: moment(startDate).format("h:mm a"),
     endTime: moment(endDate).format("h:mm a"),
+    isAllDay: false, // Add the isAllDay property and set it to false by default
   };
+  obj.isAllDay = obj.startTime === "12:00 am" && obj.endTime === "12:00 am";
+  return obj;
 }
+
+export const durationsDetails: DurationObject[] = [
+  {
+    title: "15 min",
+    duration: 15,
+  },
+  {
+    title: "30 min",
+    duration: 30,
+  },
+  {
+    title: "60 min",
+    duration: 60,
+  },
+  {
+    title: "All day",
+    duration: "all day",
+  },
+];
+export const getDurationTitle = (duration: number | "all day") => {
+  return durationsDetails.find((d) => d.duration === duration)?.title;
+};
+//find index of array based on duration
+// export const findIndexByDuration = (duration: number | "all day") => {
+//   return durationsDetails.findIndex((d) => d.duration === duration);
+// };

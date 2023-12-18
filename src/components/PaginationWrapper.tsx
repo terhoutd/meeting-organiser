@@ -5,19 +5,27 @@ import PaginationRow from "./PaginationRow";
 
 export const PaginationContext = React.createContext({});
 
-export default function PaginationWrapper({ children, maxSlotsPerPage, slotList, showLegend, showTip }) {
+export default function PaginationWrapper({
+  children,
+  maxSlotsPerPage,
+  slotList,
+  showLegend,
+  showTip,
+}) {
   const { pollData, isDesktop } = useVote();
   if (!pollData) return null;
   const { participants }: { slots: FsSlot[]; participants: ParticipantFullInfo[] } = pollData;
   // const isOverview = variant == "overview";
   // console.log("isOverview in PaginationWrapper", isOverview);
-  console.log("isDesktop", isDesktop);
   console.log("slotList", slotList);
   const [rightPagination, setRightPagination] = useState(true);
   const [slotPage, setSlotPage] = useState(1);
   const maxPage = Math.ceil(slotList.length / maxSlotsPerPage);
   const slotsShownOnDesktop = slotList
-    .filter((s, index) => index + 1 > (slotPage - 1) * maxSlotsPerPage && index + 1 <= slotPage * maxSlotsPerPage)
+    .filter(
+      (s, index) =>
+        index + 1 > (slotPage - 1) * maxSlotsPerPage && index + 1 <= slotPage * maxSlotsPerPage
+    )
     .map((s) => s.id);
   const slotsShownOnMobile = slotList.map((s) => s.id);
   const slotsShown = isDesktop ? slotsShownOnDesktop : slotsShownOnMobile;

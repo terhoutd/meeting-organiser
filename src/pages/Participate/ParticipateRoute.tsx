@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 export function ParticipateRoute() {
   const { groupPollId } = useParams();
-  const { participantIdFromCookie } = useVote();
+  const { isVoting, participantIdFromCookie } = useVote();
   let params = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,6 +14,8 @@ export function ParticipateRoute() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (currentPath === basePath && !participantIdFromCookie) {
+      navigate(basePath + "/vote");
+    } else if (currentPath == basePath + "/vote/confirm" && !isVoting) {
       navigate(basePath + "/vote");
     } else {
       setLoading(false);
