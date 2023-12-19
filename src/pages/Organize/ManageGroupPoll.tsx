@@ -63,33 +63,34 @@ export default function ManageGroupPoll() {
   const maxSlotsPerPage = 8;
 
   return (
-    <div className="flex flex-col bg-white lg:flex-row">
-      <dialog
-        open={isCopyLinkMessageOpen ? true : undefined}
-        className={`fixed top-8 z-10 bg-green-700 p-4 text-white transition-opacity duration-500`}
-      >
-        Invite link copied!
-      </dialog>
+    <div className="h-screen ">
+      <div className="mx-auto flex max-w-[1000px] flex-col bg-white lg:mt-5 lg:flex-row">
+        <dialog
+          open={isCopyLinkMessageOpen ? true : undefined}
+          className={`fixed top-8 z-10 bg-green-700 p-4 text-white transition-opacity duration-500`}
+        >
+          Invite link copied!
+        </dialog>
 
-      <dialog
-        open={isPollCreated ? true : undefined}
-        className={`fixed top-8 z-10 bg-blue-400 px-8 py-4 text-white transition-opacity
+        <dialog
+          open={isPollCreated ? true : undefined}
+          className={`fixed top-8 z-10 bg-blue-400 px-8 py-4 text-white transition-opacity
         duration-500`}
-      >
-        <div className=" flex items-center gap-4">
-          <span>You have successfully created your poll! Now, time to send out invites.</span>
-          <div
-            className="flex h-5 w-5 cursor-pointer items-center justify-center"
-            onClick={() => {
-              console.log("close");
-              setIsPollCreated(false);
-            }}
-          >
-            <CloseSvg />
+        >
+          <div className=" flex items-center gap-4">
+            <span>You have successfully created your poll! Now, time to send out invites.</span>
+            <div
+              className="flex h-5 w-5 cursor-pointer items-center justify-center"
+              onClick={() => {
+                console.log("close");
+                setIsPollCreated(false);
+              }}
+            >
+              <CloseSvg />
+            </div>
           </div>
-        </div>
-      </dialog>
-      {/* <Message
+        </dialog>
+        {/* <Message
         isOpen={isCopyLinkMessageOpen}
         onClose={function (): void {
           setIsCopyLinkMessageOpen(false);
@@ -98,59 +99,60 @@ export default function ManageGroupPoll() {
         description="You have successfully created your poll! Now, time to send out invites."
         autoFade={true}
       /> */}
-      <div className=" relative w-full sm:px-0  lg:border lg:border-slate-300">
-        <div className="  flex flex-col justify-between lg:px-8 lg:pt-8">
-          <div className="mx-4 mb-6 lg:mx-0">
-            <ParticipationHeaders mainText={pollData.title} />
-          </div>
-          <div className="mx-4 mb-4  flex justify-between lg:mx-0">
-            <ul>
-              <li>You are the organizer</li>
-            </ul>
-            <div className=" flex gap-2">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  navigate("/meeting/organize/id/" + pollId + "/edit");
-                }}
-              >
-                Edit
-              </Button>
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    `${location.protocol}//${location.host}/meeting/participate/id/${pollId}/vote`
-                  );
-                  setIsCopyLinkMessageOpen(true);
-                  setTimeout(() => {
-                    setIsCopyLinkMessageOpen(false);
-                  }, 5000);
-                }}
-              >
-                Share invite
-              </Button>
+        <div className=" relative w-full sm:px-0  lg:border lg:border-slate-300">
+          <div className="  flex flex-col justify-between lg:px-8 lg:pt-8">
+            <div className="mx-4 mb-6 lg:mx-0">
+              <ParticipationHeaders mainText={pollData.title} />
             </div>
-          </div>
-          <div className=" mx-4  justify-between lg:mx-0 lg:flex">
-            <p className="mb-6 font-bold">Availabilities</p>
-            <ResponseLegend column={false} extended={false} />
-          </div>
+            <div className="mx-4 mb-4  flex justify-between lg:mx-0">
+              <ul>
+                <li>You are the organizer</li>
+              </ul>
+              <div className=" flex gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    navigate("/meeting/organize/id/" + pollId + "/edit");
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${location.protocol}//${location.host}/meeting/participate/id/${pollId}/vote`
+                    );
+                    setIsCopyLinkMessageOpen(true);
+                    setTimeout(() => {
+                      setIsCopyLinkMessageOpen(false);
+                    }, 5000);
+                  }}
+                >
+                  Share invite
+                </Button>
+              </div>
+            </div>
+            <div className=" mx-4  justify-between lg:mx-0 lg:flex">
+              <p className="mb-6 font-bold">Availabilities</p>
+              <ResponseLegend column={false} extended={false} />
+            </div>
 
-          <div className=" mb-2">
-            <PaginationWrapper
-              slotList={pollData.slots}
-              maxSlotsPerPage={maxSlotsPerPage}
-              showLegend={false}
-              showTip={false}
-            >
-              <VoteTable className="my-4 lg:-mr-8" />
-            </PaginationWrapper>
+            <div className=" mb-2">
+              <PaginationWrapper
+                slotList={pollData.slots}
+                maxSlotsPerPage={maxSlotsPerPage}
+                showLegend={false}
+                showTip={false}
+              >
+                <VoteTable className="my-4 lg:-mr-8" />
+              </PaginationWrapper>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-  
+
   function declineAllSlots(pollData) {
     setUserResponses(
       pollData.slots.map((ev) => {
