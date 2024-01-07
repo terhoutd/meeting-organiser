@@ -3,7 +3,7 @@ import { FsSlot, PollData } from "../others/Types";
 import ParticipantNameLabel from "./ParticipantNameLabel";
 import SlotYesCount from "./SlotYesCount";
 import TickBox from "./TickBox";
-import { useVote } from "../context/voteContext";
+import { useVote } from "../context/VoteContext";
 
 export default function ResponsesTable({
   pollData,
@@ -21,14 +21,16 @@ export default function ResponsesTable({
   console.log("displayedSlotsIds", displayedSlotsIds);
   let sortedIncludedParticipants = [
     ...pollData.participants.filter((p) => {
-      if (participant && currentParticipantPosition == "exclude") return p.email !== participant.email;
+      if (participant && currentParticipantPosition == "exclude")
+        return p.email !== participant.email;
       return true;
     }),
   ];
   const displayedSlots = pollData.slots.filter((s) => displayedSlotsIds.includes(s.id));
 
   sortedIncludedParticipants.sort((a, b) => {
-    if (currentParticipantPosition == "top" && participant && a.email === participant.email) return -1;
+    if (currentParticipantPosition == "top" && participant && a.email === participant.email)
+      return -1;
     if (a.isOrganiser) return -1;
     const nameA = a.name.toUpperCase(); // ignore upper and lowercase
     const nameB = b.name.toUpperCase(); // ignore upper and lowercase
@@ -60,7 +62,12 @@ export default function ResponsesTable({
       >
         {displayedSlots.map((s) => {
           return (
-            <SlotYesCount key={s.id} slotId={s.id} participants={sortedIncludedParticipants} countIcon={countIcon} />
+            <SlotYesCount
+              key={s.id}
+              slotId={s.id}
+              participants={sortedIncludedParticipants}
+              countIcon={countIcon}
+            />
           );
         })}
       </div>
@@ -81,7 +88,9 @@ export default function ResponsesTable({
             <ParticipantNameLabel participant={participant} />
             <div className="flex flex-row">
               {displayedSlots.map((ev) => {
-                const userVoteforEvent = participant.responses.find((uv) => uv.id === ev.id)?.response;
+                const userVoteforEvent = participant.responses.find(
+                  (uv) => uv.id === ev.id
+                )?.response;
                 const key = ev.id;
                 return <TickBox type={userVoteforEvent || "question"} variant="table" key={key} />;
               })}

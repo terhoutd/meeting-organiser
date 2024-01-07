@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useVote } from "../context/voteContext";
+import { useVote } from "../context/VoteContext";
 import { PaginationContext } from "./PaginationWrapper";
 import { AnimatePresence } from "framer-motion";
 import { MotionDiv } from "./MotionDiv";
@@ -9,15 +9,8 @@ import SlotDetails from "./SlotDetails";
 import SlotVote from "./SlotVote";
 
 export function VoteTable({ className = "" }: { className?: string }) {
-  const {
-    isPageReadOnly,
-    pollData,
-    setPollId,
-    userResponses,
-    setUserResponses,
-    participant,
-    pageType,
-  } = useVote();
+  const { isPageReadOnly, pollData, userResponses, setUserResponses, participant, pageType } =
+    useVote();
   const countIcon = isPageReadOnly ? "people" : "tick";
 
   console.log(pollData);

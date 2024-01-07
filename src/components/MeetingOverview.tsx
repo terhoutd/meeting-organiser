@@ -1,5 +1,5 @@
 import React from "react";
-import { useVote } from "../context/voteContext";
+import { useVote } from "../context/VoteContext";
 import EventMetaData from "./EventMetaData";
 import ResponseLegend from "./ResponseLegend";
 import TickBox from "./TickBox";

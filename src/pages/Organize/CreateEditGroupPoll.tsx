@@ -1,5 +1,5 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Calendar, momentLocalizer, stringOrDate } from "react-big-calendar";
+import { ReactElement, memo, useCallback, useEffect, useRef, useState } from "react";
+import { Calendar, EventProps, momentLocalizer, stringOrDate } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -10,30 +10,34 @@ import "../../customCalendar.css";
 import { Dialog, Tab } from "@headlessui/react";
 import Toolbar, { CalendarWeekHeader } from "../../components/Toolbar";
 const localizer = momentLocalizer(moment);
-const DnDCalendar = withDragAndDrop(Calendar);
+const DnDCalendar = withDragAndDrop(Calendar<ExtendedEvent, object>);
 
 import clsx from "clsx";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
-import { db } from "../../others/firebase";
-import { CalEvent, Duration, PollData, responseOption } from "../../others/Types";
+import { auth, db } from "../../others/firebase";
+import { ExtendedEvent, Duration, PollData, responseOption, FsSlot } from "../../others/Types";
 import { COOKIE_NAME_PARTICIPANT_ID, ROOT_DOC_NAME, YES_VOTE } from "../../others/Constants";
 import { durationsDetails, uploadParticipantInfo } from "../../others/helpers";
 import { CloseSvg } from "../../assets/CloseSvg";
-import { m } from "framer-motion";
+
 import Button from "../../components/Button";
-import { useVote } from "../../context/voteContext";
-import { Field, Form, Formik, useFormikContext } from "formik";
+import { useVote } from "../../context/VoteContext";
+import { Field, Form, Formik, FormikErrors, FormikTouched, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { CustomInput } from "../../components/CustomInput";
 import { useCookies } from "react-cookie";
-import { useScrollToError } from "../../hooks/useScrollToError";
+import { CustomTextarea } from "../../components/CustomTextarea";
+import { onAuthStateChanged } from "firebase/auth";
+import Header from "../../components/Header";
 
-type onSubmitValue = {
+type FormValues = {
   username: string;
   email: string;
   title: string;
+  description: string;
+  location: string;
 };
 
 type ClickEvent = {
@@ -42,15 +46,15 @@ type ClickEvent = {
   end: Date;
 };
 
+type ExtendedFormikErrors = FormikErrors<FormValues> & { atLeastOneSlotRequired?: string };
+
 export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" }) {
   const isEdit = variant === "edit";
-  const params = useParams();
   const navigate = useNavigate();
-  const pollId = isEdit ? params.groupPollId : "";
 
-  const { pollData, isDesktop, setPollId, setPageType, setPollData, setIsPollCreated } = useVote();
+  const { pollId, pollData, isDesktop, setPageType, setPollData, setIsPollCreated } = useVote();
 
-  const [events, setEvents] = useState<CalEvent[]>([]);
+  const [events, setEvents] = useState<ExtendedEvent[]>([]);
   const [duration, setDuration] = useState<Duration>(60);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -58,11 +62,6 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const clickedDurationTabIndexRef = useRef<number>(defaultIndex);
   const previousDurationTabIndexRef = useRef<number>(defaultIndex);
-  const inputRefusername = useRef<HTMLInputElement>(null);
-  const inputRefemail = useRef<HTMLInputElement>(null);
-  const inputRefTitle = useRef<HTMLInputElement>(null);
-  const atLeastOneSlotRequiredError = useRef<HTMLElement>(null);
-  const formikRef = useRef(); // Ref for the Formik component
 
   const isDurationAllDay = duration === "all day";
   const organiserParticipantId = pollData?.participants?.find((p) => p.isOrganiser)?.id;
@@ -82,6 +81,8 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
       .email("Enter a vavlid email address")
       .required("We need your email to send you notifications when answers come."),
     title: Yup.string().required("We need a title for your meeting"),
+    description: Yup.string().max(3000, "Too Long!"),
+    location: Yup.string().max(100, "Too Long!"),
   });
 
   const responsesAlreadyExist = pollData?.participants && pollData?.participants?.length > 1;
@@ -94,8 +95,21 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
   // const selectedIndex = durationsDetails.findIndex((d) => d.duration === duration);
 
   useEffect(() => {
-    setPollId(pollId);
     setPageType(`poll ${variant}`);
+
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+      console.log("auth", auth);
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const uid = user.uid;
+        // ...
+      } else {
+        // User is signed out
+        // ...
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -109,12 +123,14 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
     });
   }, [loading]);
 
-  async function updatePollHandler({ title, email, username }: onSubmitValue) {
+  async function updatePollHandler({ title, email, username, description, location }: FormValues) {
     try {
       await setDoc(
         doc(db, ROOT_DOC_NAME, pollId as string),
         {
           title: title,
+          description: description,
+          location: location,
           slots: events,
           organiserEmail: email,
           organiserName: username,
@@ -137,11 +153,13 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
       console.error("Error adding document: ", e);
     }
   }
-  async function createPollHandler({ title, email, username }: onSubmitValue) {
+  async function createPollHandler({ title, email, username, description, location }: FormValues) {
     try {
       const organiserAuthToken = uuidv4();
       const docRef = await addDoc(collection(db, ROOT_DOC_NAME), {
         title: title,
+        description: description,
+        location: location,
         slots: events,
         organiserEmail: email,
         organiserName: username,
@@ -174,7 +192,7 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
         //discard click event because not in line with current duration type
         return;
       }
-      let composedEvent: CalEvent;
+      let composedEvent: ExtendedEvent;
       if (isDurationAllDay) {
         composedEvent = {
           start: event.start,
@@ -202,7 +220,7 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
     },
     [events, duration]
   );
-  function removeEventHandler(calEvent: CalEvent) {
+  function removeEventHandler(calEvent: ExtendedEvent) {
     setEvents((prev) => {
       return prev.filter((ev) => ev.id !== calEvent.id);
     });
@@ -238,6 +256,8 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
           username: pollData?.organiserName || "",
           email: pollData?.organiserEmail || "",
           title: pollData?.title || "",
+          description: pollData?.description || "",
+          location: pollData?.location || "",
         }}
         validationSchema={InputFieldsSchema}
         validate={(values) => {
@@ -247,25 +267,24 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
           // return { ...schemaErrors, ...calendarErrors };
           return validateCalendarEvents();
         }}
-        onSubmit={(values: onSubmitValue) => {
-          // same shape as initial values
-          // if (events.length === 0) {
-          //   atLeastOneSlotRequiredError.current?.scrollIntoView({
-          //     behavior: "smooth",
-          //     block: "center",
-          //   });
-          //   return;
-          // }
+        onSubmit={(values: FormValues) => {
           isEdit ? updatePollHandler(values) : createPollHandler(values);
         }}
       >
-        {({ errors, touched, isValid, values }) => (
+        {({
+          errors,
+          touched,
+        }: {
+          errors: ExtendedFormikErrors;
+          touched: FormikTouched<FormValues>;
+        }) => (
           <>
             {/* <form className="overflow-x-hidden"> */}
             <div
               className="mb-20 w-full  overflow-y-auto overflow-x-hidden"
               // style={{ height: "calc(100vh - 80px)" }}
             >
+              <Header />
               <div className="mx-auto mt-4 w-full max-w-[1000px] border border-zinc-100 bg-white p-4 lg:p-8">
                 <h1 className="ml-[-22px] mr-[-22px] border-b px-4 pb-8 text-4xl">
                   Create group poll
@@ -278,7 +297,6 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
                         Your name
                       </label>
                       <Field
-                        innerRef={inputRefusername}
                         name="username"
                         id="username"
                         component={CustomInput}
@@ -295,7 +313,6 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
                         Your email
                       </label>
                       <Field
-                        innerRef={inputRefemail}
                         name="email"
                         id="email"
                         component={CustomInput}
@@ -312,11 +329,45 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
                         Title
                       </label>
                       <Field
-                        innerRef={inputRefTitle}
                         name="title"
                         id="title"
                         component={CustomInput}
                         placeholder="my meeting"
+                      />
+                      {/* If this field has been touched, and it contains an error, display
+           it */}
+                      {touched.title && errors.title && (
+                        <div className="mt-2 text-red-500">{errors.title as string}</div>
+                      )}
+                    </div>
+                    <div className="mb-4 text-neutral-800">
+                      <label className="block" htmlFor="title">
+                        Description (optional)
+                      </label>
+
+                      <Field
+                        // innerRef={inputRefTitle}
+                        name="description"
+                        id="description"
+                        component={CustomTextarea}
+                        placeholder="Here you can include things like an agenda, instructions, or other details"
+                      />
+                      {/* If this field has been touched, and it contains an error, display
+           it */}
+                      {touched.title && errors.title && (
+                        <div className="mt-2 text-red-500">{errors.title as string}</div>
+                      )}
+                    </div>
+                    <div className="mb-4 text-neutral-800">
+                      <label className="block" htmlFor="title">
+                        Location (optional)
+                      </label>
+                      <Field
+                        // innerRef={inputRefTitle}
+                        name="location"
+                        id="location"
+                        component={CustomInput}
+                        placeholder="Where will this happen?"
                       />
                       {/* If this field has been touched, and it contains an error, display
            it */}
@@ -360,11 +411,7 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
               <div className="mx-auto mb-4 mt-2 w-full max-w-[1000px] border border-zinc-100 bg-white p-4 lg:p-8 ">
                 <h2 className="pb-4  text-3xl ">Add your times</h2>
                 {errors.atLeastOneSlotRequired && (
-                  <span
-                    className="text-red-500"
-                    ref={atLeastOneSlotRequiredError}
-                    id="atLeastOneSlotRequired"
-                  >
+                  <span className="text-red-500" id="atLeastOneSlotRequired">
                     {errors.atLeastOneSlotRequired}
                   </span>
                 )}
@@ -432,7 +479,8 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
                     components={{
                       toolbar: Toolbar,
                       week: { header: CalendarWeekHeader },
-                      event: ({ event, title }: { event: CalEvent; title: string }) => {
+                      event: ({ event, title }) => {
+                        console.log("printing event from components", event);
                         return (
                           <div>
                             {event.title}
@@ -447,7 +495,6 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
                       },
                     }}
                     resizable={false}
-                    draggable={true}
                     showMultiDayTimes={true}
                   />
                 </div>
@@ -469,9 +516,9 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
     return { momentStart: moment(start), momentEnd: moment(end) };
   }
   function getComposedTimeEventFromDuration(
-    event: CalEvent | ClickEvent,
+    event: ExtendedEvent | ClickEvent,
     duration: Duration
-  ): CalEvent {
+  ): ExtendedEvent {
     let { start } = event;
     const momentStart = moment(start);
     const momentEnd = momentStart.clone().add(duration, "minutes");
@@ -490,7 +537,7 @@ export function CreateEditGroupPoll({ variant }: { variant: "create" | "edit" })
     return { start, end, title, id, duration };
   }
 
-  function getCalEventFromFbEvent(fbEvent): CalEvent {
+  function getCalEventFromFbEvent(fbEvent: FsSlot): ExtendedEvent {
     return {
       start: fbEvent.start.toDate(),
       end: fbEvent.end.toDate(),
@@ -560,8 +607,12 @@ function isDateInThePast(date: Date) {
   return moment(cutOffDate).isAfter(date);
 }
 
-export const getFieldErrorNames = (formikErrors) => {
-  const transformObjectToDotNotation = (obj, prefix = "", result = []) => {
+export const getFieldErrorNames = (formikErrors: ExtendedFormikErrors) => {
+  const transformObjectToDotNotation = (
+    obj: { [key: string]: any },
+    prefix = "",
+    result: any[] = []
+  ) => {
     Object.keys(obj).forEach((key) => {
       const value = obj[key];
       if (!value) return;

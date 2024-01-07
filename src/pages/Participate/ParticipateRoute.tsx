@@ -1,16 +1,13 @@
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useVote } from "../../context/voteContext";
+import { useVote } from "../../context/VoteContext";
 import { useEffect, useState } from "react";
 
 export function ParticipateRoute() {
-  const { groupPollId } = useParams();
-  const { isVoting, participantIdFromCookie } = useVote();
-  let params = useParams();
+  const { isVoting, participantIdFromCookie, pollId } = useVote();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  const pollId = params.groupPollId || "";
-  const basePath = `/meeting/participate/id/${groupPollId}`;
+  const basePath = `/meeting/participate/id/${pollId}`;
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (currentPath === basePath && !participantIdFromCookie) {

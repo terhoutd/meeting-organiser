@@ -1,8 +1,26 @@
 import { Timestamp } from "firebase/firestore";
 import { IFNEEDBE_VOTE, NO_VOTE, YES_VOTE } from "./Constants";
+import { Event } from "react-big-calendar";
 
-export type CalEvent = { start: Date; end: Date; title: string; id: string; duration: Duration };
-export type FsSlot = { start: Timestamp; end: Timestamp; title: string; id: number };
+export interface ExtendedEvent extends Event {
+  id: string;
+  duration: Duration;
+}
+// export interface firebaseEvent {
+//   allDay?: boolean | undefined;
+//   title?: React.ReactNode | undefined;
+//   start?: any;
+//   end?: any;
+//   id: string;
+//   duration: Duration;
+// }
+export type FsSlot = {
+  start: Timestamp;
+  end: Timestamp;
+  title: string;
+  id: string;
+  duration: Duration;
+};
 export type TimesResponse = {
   id: string;
   response: responseOption;
@@ -12,6 +30,8 @@ export type PollData = {
   organiserEmail: string;
   organiserName: string;
   title: string;
+  location: string;
+  description: string;
   slots: FsSlot[];
   participants: ParticipantFullInfo[];
   duration: any;

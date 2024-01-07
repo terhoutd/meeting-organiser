@@ -6,7 +6,7 @@ import YesTickSvg from "../assets/YesTickSvg";
 import IfNeedBeSvg from "../assets/IfNeedBeSvg";
 import clsx from "clsx";
 import SlotYesCount from "./SlotYesCount";
-import { useVote } from "../context/voteContext";
+import { useVote } from "../context/VoteContext";
 import NoTickSvg from "../assets/noTickSvg";
 
 export default function SlotVote({

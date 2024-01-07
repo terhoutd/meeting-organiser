@@ -4,22 +4,21 @@ import { useParams, useNavigate } from "react-router-dom";
 import { NO_VOTE } from "../../others/Constants";
 
 import Button from "../../components/Button";
-import { useVote } from "../../context/voteContext";
+import { useVote } from "../../context/VoteContext";
 import ResponseLegend from "../../components/ResponseLegend";
 import ParticipationHeaders from "../../components/ParticipationHeader";
 import PaginationWrapper from "../../components/PaginationWrapper";
 import { VoteTable } from "../../components/VoteTable";
-import { Message } from "../../components/Message";
 import { CloseSvg } from "../../assets/CloseSvg";
+import EventMetaData from "../../components/EventMetaData";
+import { Participant, ParticipantFullInfo, PollData } from "../../others/Types";
 
 export default function ManageGroupPoll() {
-  let params = useParams();
-  const pollId = params.groupPollId || "";
   const [isCopyLinkMessageOpen, setIsCopyLinkMessageOpen] = useState(false);
 
   const {
+    pollId,
     pollData,
-    setPollId,
     userResponses,
     setUserResponses,
     setParticipant,
@@ -30,7 +29,6 @@ export default function ManageGroupPoll() {
 
   const navigate = useNavigate();
   useEffect(() => {
-    setPollId(pollId);
     setPageType("poll overview");
   }, []);
 
@@ -47,7 +45,7 @@ export default function ManageGroupPoll() {
     if (!pollDataAvailable) return;
     // // console.log("in", declineAllSlots(pollData));
     // declineAllSlots(pollData);
-    const curParticipant = pollData.participants.find((p) => p.isOrganiser);
+    const curParticipant = pollData.participants.find((p) => p.isOrganiser) as ParticipantFullInfo;
     setParticipant(curParticipant);
     setUserResponses(curParticipant.responses);
   }, [pollDataAvailable]);
@@ -104,11 +102,14 @@ export default function ManageGroupPoll() {
             <div className="mx-4 mb-6 lg:mx-0">
               <ParticipationHeaders mainText={pollData.title} />
             </div>
-            <div className="mx-4 mb-4  flex justify-between lg:mx-0">
-              <ul>
+            <div className=" mx-4 mb-4 flex flex-col justify-between gap-3 lg:mx-0 lg:flex-row">
+              {/* <ul>
                 <li>You are the organizer</li>
-              </ul>
-              <div className=" flex gap-2">
+              </ul> */}
+              <div className="order-3 lg:order-1">
+                <EventMetaData />
+              </div>
+              <div className="order-2 flex h-11 gap-2 lg:h-9">
                 <Button
                   variant="secondary"
                   onClick={() => {
@@ -153,7 +154,7 @@ export default function ManageGroupPoll() {
     </div>
   );
 
-  function declineAllSlots(pollData) {
+  function declineAllSlots(pollData: PollData) {
     setUserResponses(
       pollData.slots.map((ev) => {
         return { id: ev.id, response: NO_VOTE };
@@ -161,10 +162,10 @@ export default function ManageGroupPoll() {
     );
   }
   function declineHandler() {
-    declineAllSlots(pollData);
+    declineAllSlots(pollData as PollData);
     navigate(urlConfirmPage);
   }
-  function continueHandler(e) {
+  function continueHandler() {
     navigate(urlConfirmPage);
   }
 }

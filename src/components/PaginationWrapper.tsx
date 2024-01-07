@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useVote } from "../context/voteContext";
+import { useVote } from "../context/VoteContext";
 import { FsSlot, ParticipantFullInfo } from "../others/Types";
 import PaginationRow from "./PaginationRow";
 

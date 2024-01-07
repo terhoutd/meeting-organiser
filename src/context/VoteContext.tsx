@@ -2,7 +2,7 @@ import { doc, setDoc } from "firebase/firestore";
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { db } from "../others/firebase";
 import { TimesResponse, Participant, PollData } from "../others/Types";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import { getDoc, getDocs, collection } from "firebase/firestore";
 import { FsSlot, ParticipantFullInfo } from "../others/Types";
@@ -13,7 +13,7 @@ import { COOKIE_NAME_PARTICIPANT_ID } from "../others/Constants";
 type VoteContextType = {
   pollData?: PollData;
   setPollData: (data: PollData) => void;
-  setPollId: (id: string) => void;
+  pollId: string | undefined;
   userResponses?: TimesResponse[];
   setUserResponses: (responses: TimesResponse[]) => void;
   participant?: Participant;
@@ -41,8 +41,10 @@ export function useVote(): VoteContextType {
 }
 
 export function VoteProvider({ children }: { children: ReactNode }) {
+  const params = useParams();
+  const pollId = params?.groupPollId;
+
   const location = useLocation();
-  const [pollId, setPollId] = useState<string>();
   const [pageType, setPageType] = useState<string>();
   const [pollData, setPollData] = useState<PollData>();
   const [userResponses, setUserResponses] = useState<TimesResponse[]>();
@@ -90,7 +92,7 @@ export function VoteProvider({ children }: { children: ReactNode }) {
   const value = {
     pollData,
     setPollData,
-    setPollId,
+    pollId,
     userResponses,
     setUserResponses,
     participant,

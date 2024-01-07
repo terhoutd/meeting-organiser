@@ -5,9 +5,10 @@ import ManageGroupPoll from "./pages/Organize/ManageGroupPoll";
 import VoteGroupPoll from "./pages/Participate/VoteGroupPoll";
 import ConfirmVoteGroupPoll from "./pages/Participate/ConfirmVoteGroupPoll";
 import OverviewVoteGroupPoll from "./pages/Participate/OverviewVoteGroupPoll";
-import { VoteProvider } from "./context/voteContext";
+import { VoteProvider } from "./context/VoteContext";
 import { CreateEditGroupPoll } from "./pages/Organize/CreateEditGroupPoll";
 import { ParticipateRoute } from "./pages/Participate/ParticipateRoute";
+import LoginPage from "./pages/Auth/Login";
 
 export default function App() {
   //return <CreateGroupPoll />;
@@ -16,6 +17,7 @@ export default function App() {
       <VoteProvider>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/meeting/auth" element={<LoginPage />} />
           <Route
             path="/meeting/organize/groups"
             element={<CreateEditGroupPoll variant="create" />}

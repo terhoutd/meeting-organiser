@@ -1,6 +1,7 @@
-import { Navigate as navigate } from "react-big-calendar";
+import { ToolbarProps, Navigate as navigate } from "react-big-calendar";
 import { ToolbarArrows } from "./ToolbarArrows";
 import { getDateDetails } from "../others/helpers";
+import { ComponentProps, ComponentType, ReactElement } from "react";
 
 type ToolBar = {
   label: string;
@@ -18,12 +19,19 @@ export default function CustomToolbar({
   label,
   localizer: { messages },
   onNavigate,
-}: ToolBar) {
+}: ToolbarProps): ReactElement {
   return (
     <div className="mb-8">
       <div className="space-x-2">
-        <ToolbarArrows onClickHandler={() => onNavigate(navigate.PREVIOUS)} ariaLabel={messages.previous} />
-        <ToolbarArrows onClickHandler={() => onNavigate(navigate.NEXT)} ariaLabel={messages.next} rotation={"right"} />
+        <ToolbarArrows
+          onClickHandler={() => onNavigate(navigate.PREVIOUS)}
+          ariaLabel={messages.previous}
+        />
+        <ToolbarArrows
+          onClickHandler={() => onNavigate(navigate.NEXT)}
+          ariaLabel={messages.next}
+          rotation={"right"}
+        />
 
         <button
           type="button"

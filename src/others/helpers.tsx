@@ -1,7 +1,7 @@
 import { addDoc, collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import React from "react";
 import { db } from "./firebase";
-import { DurationObject, ParticipantFullInfo, TimesResponse } from "./Types";
+import { DurationObject, ParticipantFullInfo, PollData, TimesResponse } from "./Types";
 import moment from "moment";
 import { ROOT_DOC_NAME } from "./Constants";
 
